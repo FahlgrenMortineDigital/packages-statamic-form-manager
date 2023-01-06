@@ -15,5 +15,10 @@ return [
     'managers' => [
         'crm'           => Managers\CrmFormManager::class,
         'transactional' => Managers\TransactionalFormManager::class
-    ]
+    ],
+
+    'queue' => [
+        'connection' => env('QUEUE_CONNECTION', 'sync'),
+        'queue'      => 'form-submissions'
+    ],
 ];

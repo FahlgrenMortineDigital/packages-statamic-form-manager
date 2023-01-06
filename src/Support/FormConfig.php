@@ -2,8 +2,8 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Support;
 
+use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
-use Fahlgrendigital\StatamicFormManager\Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -18,8 +18,11 @@ class FormConfig
         }
 
         return collect($config[$handle])->filter(function ($config) {
+            // only fetch enabled form managers
             return $config['::enabled'];
         })->map(function ($config, $key) {
+            // [0] : Manager key
+            // [1] : Manager subtype (sales-force, etc)
             $manager_key_parts = explode('::', $key, 2);
             $manager           = static::initManager(
                 $manager_key_parts[0],
