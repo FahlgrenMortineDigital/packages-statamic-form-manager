@@ -6,12 +6,13 @@ use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Config;
 
 class FormConfig
 {
     public function get(string $handle): Collection
     {
-        $config = config('form-mappings.forms');
+        $config = config('statamic-forms.forms');
 
         if (!array_key_exists($handle, $config)) {
             return collect([]);
@@ -19,7 +20,7 @@ class FormConfig
 
         return collect($config[$handle])->filter(function ($config) {
             // only fetch enabled form managers
-            return $config['::enabled'];
+            return $config['::enabled'] ?? false;
         })->map(function ($config, $key) {
             // [0] : Manager key
             // [1] : Manager subtype (sales-force, etc)
@@ -40,11 +41,11 @@ class FormConfig
 
     protected function initManager(string $key, array $config, ?string $subtype = null): FormManager
     {
-        if (!array_key_exists($key, config('form-mappings.managers'))) {
+        if (!array_key_exists($key, Config::get('statamic-form-manager.managers'))) {
             throw new Exception('Form manager map not found');
         }
 
-        $class = config(sprintf("form-mappings.managers.%s", $key));
+        $class = Config::get(sprintf("statamic-form-manager.managers.%s", $key));
 
         return $class::init($key, $config, $subtype);
     }

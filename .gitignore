@@ -6,3 +6,6 @@ vendor
 
 # Composer
 composer.lock
+
+# Testing
+.phpunit.result.cache

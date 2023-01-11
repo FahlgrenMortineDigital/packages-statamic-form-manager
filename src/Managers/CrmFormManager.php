@@ -3,6 +3,7 @@
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
+use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerConfigParamException;
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\Subtypeable;
 use Illuminate\Support\Arr;
@@ -25,7 +26,7 @@ class CrmFormManager implements FormManager
     protected string $url = '';
 
     # Create a new FormManager instance fluently
-    public static function make(array $maps, ?string $url = '', ?array $defaults = []): self
+    public static function make(array $maps, string $url = '', ?array $defaults = []): self
     {
         $manager           = new self;
         $manager->maps     = $maps;
@@ -38,7 +39,7 @@ class CrmFormManager implements FormManager
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
     {
         $global_key    = static::buildConfigKey($key, $subtype);
-        $global_config = config(sprintf("form-mappings.defaults.%s", $global_key), []);
+        $global_config = config(sprintf("statamic-forms.defaults.%s", $global_key), []);
         $url           = Arr::get($config, '::url', Arr::get($global_config, '::url'));
         $maps          = array_merge(
             Arr::get($global_config, 'maps', []),
@@ -48,6 +49,10 @@ class CrmFormManager implements FormManager
             Arr::get($global_config, 'default', []),
             Arr::get($config, 'default', [])
         );
+
+        if (empty($url)) {
+            throw new MissingManagerConfigParamException("Missing required config param [::url]");
+        }
 
         return static::make($maps, $url, $default);
     }
