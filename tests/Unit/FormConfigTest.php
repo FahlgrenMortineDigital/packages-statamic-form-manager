@@ -3,6 +3,7 @@
 namespace Fahlgrendigital\StatamicFormManager\Tests\Unit;
 
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerConfigParamException;
+use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerMailableException;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Config;
 use Fahlgrendigital\StatamicFormManager\Tests\TestCase;
@@ -146,5 +147,64 @@ class FormConfigTest extends TestCase
             $crm_manager->url,
             Config::get('statamic-forms.defaults.crm::sales-force.::url')
         );
+    }
+
+    public function test_catch_missing_mailable_exception_for_transactional()
+    {
+        Config::set('statamic-forms.forms.test_form', [
+            'transactional' => [
+                '::enabled' => true,
+                '::fake'    => env('FORMS_DEBUG', true),
+                'mailto'    => [
+                    'caps001@columbusplasticsurgery.com'
+                ],
+            ]
+        ]);
+
+        $form_config = new FormConfig();
+
+        $this->assertThrows(function () use ($form_config) {
+            $form_config->get('test_form');
+        }, MissingManagerConfigParamException::class);
+    }
+
+    public function test_catch_null_mailable_exception_for_transactional()
+    {
+        Config::set('statamic-forms.forms.test_form', [
+            'transactional' => [
+                '::enabled' => true,
+                '::fake'    => env('FORMS_DEBUG', true),
+                'mailable'  => null,
+                'mailto'    => [
+                    'caps001@columbusplasticsurgery.com'
+                ],
+            ]
+        ]);
+
+        $form_config = new FormConfig();
+
+        $this->assertThrows(function () use ($form_config) {
+            $form_config->get('test_form');
+        }, MissingManagerConfigParamException::class);
+    }
+
+    public function test_mailable_is_a_valid_class()
+    {
+        Config::set('statamic-forms.forms.test_form', [
+            'transactional' => [
+                '::enabled' => true,
+                '::fake'    => env('FORMS_DEBUG', true),
+                'mailable'  => 'RandomClass\\Path\\Goes\\Here',
+                'mailto'    => [
+                    'caps001@columbusplasticsurgery.com'
+                ],
+            ]
+        ]);
+
+        $form_config = new FormConfig();
+
+        $this->assertThrows(function () use ($form_config) {
+            $form_config->get('test_form');
+        }, MissingManagerMailableException::class);
     }
 }

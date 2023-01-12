@@ -2,7 +2,10 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
+use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
+use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerConfigParamException;
+use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerMailableException;
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\Subtypeable;
 use Illuminate\Support\Arr;
@@ -28,8 +31,17 @@ class TransactionalFormManager implements FormManager
 
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
     {
+        if (!array_key_exists('mailable', $config)
+            || $config['mailable'] == null) {
+            throw new MissingManagerConfigParamException("Missing required config param [email]");
+        }
+
+        if (!class_exists($config['mailable'])) {
+            throw new MissingManagerMailableException("{$config['mailable']} could not be found.");
+        }
+
         $global_key    = static::buildConfigKey($key, $subtype);
-        $global_config = config(sprintf("form-mappings.defaults.%s", $global_key), []);
+        $global_config = config(sprintf("statamic-forms.defaults.%s", $global_key), []);
         $global_mailto = Arr::get($global_config, 'mailto', []);
         $local_mailto  = Arr::get($config, 'mailto', []);
 
@@ -42,6 +54,10 @@ class TransactionalFormManager implements FormManager
         }
 
         $mailto = array_merge($global_mailto, $local_mailto);
+
+        if (empty($mailto)) {
+            throw new MissingManagerConfigParamException("Missing required config param [mailto]");
+        }
 
         return static::make(
             Arr::get($config, 'mailable'),
