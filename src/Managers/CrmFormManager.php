@@ -23,7 +23,7 @@ class CrmFormManager implements FormManager
     protected ?array $defaults = [];
 
     # CRM POST url
-    protected string $url = '';
+    public string $url = '';
 
     # Create a new FormManager instance fluently
     public static function make(array $maps, string $url = '', ?array $defaults = []): self
