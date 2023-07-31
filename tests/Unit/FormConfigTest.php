@@ -4,7 +4,8 @@ namespace Fahlgrendigital\StatamicFormManager\Tests\Unit;
 
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerConfigParamException;
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerMailableException;
-use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
+use Fahlgrendigital\StatamicFormManager\Managers\TransactionalFormManager;
+use Fahlgrendigital\StatamicFormManager\Support\ManagerFactory;
 use Illuminate\Support\Facades\Config;
 use Fahlgrendigital\StatamicFormManager\Tests\TestCase;
 
@@ -38,7 +39,7 @@ class FormConfigTest extends TestCase
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
 
         $this->assertCount(1, $form_config->get('test_form'));
     }
@@ -59,7 +60,7 @@ class FormConfigTest extends TestCase
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
 
         $this->assertCount(0, $form_config->get('test_form'));
     }
@@ -80,7 +81,7 @@ class FormConfigTest extends TestCase
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
@@ -110,7 +111,7 @@ class FormConfigTest extends TestCase
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
         $managers    = $form_config->get('test_form');
         $crm_manager = $managers->first();
 
@@ -139,7 +140,7 @@ class FormConfigTest extends TestCase
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
         $managers    = $form_config->get('test_form');
         $crm_manager = $managers->first();
 
@@ -152,16 +153,16 @@ class FormConfigTest extends TestCase
     public function test_catch_missing_mailable_exception_for_transactional()
     {
         Config::set('statamic-forms.forms.test_form', [
-            'transactional' => [
+            'transactional::' => [
                 '::enabled' => true,
-                '::fake'    => env('FORMS_DEBUG', true),
+                '::fake'    => false,
                 'mailto'    => [
                     'caps001@columbusplasticsurgery.com'
                 ],
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
@@ -173,7 +174,7 @@ class FormConfigTest extends TestCase
         Config::set('statamic-forms.forms.test_form', [
             'transactional' => [
                 '::enabled' => true,
-                '::fake'    => env('FORMS_DEBUG', true),
+                '::fake'    => false,
                 'mailable'  => null,
                 'mailto'    => [
                     'caps001@columbusplasticsurgery.com'
@@ -181,7 +182,7 @@ class FormConfigTest extends TestCase
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
@@ -193,7 +194,7 @@ class FormConfigTest extends TestCase
         Config::set('statamic-forms.forms.test_form', [
             'transactional' => [
                 '::enabled' => true,
-                '::fake'    => env('FORMS_DEBUG', true),
+                '::fake'    => false,
                 'mailable'  => 'RandomClass\\Path\\Goes\\Here',
                 'mailto'    => [
                     'caps001@columbusplasticsurgery.com'
@@ -201,10 +202,71 @@ class FormConfigTest extends TestCase
             ]
         ]);
 
-        $form_config = new FormConfig();
+        $form_config = new ManagerFactory();
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
         }, MissingManagerMailableException::class);
+    }
+
+    public function test_mailto_is_not_missing()
+    {
+        Config::set('statamic-forms.forms.test_form', [
+            'transactional' => [
+                '::enabled' => true,
+                '::fake'    => false,
+                'mailable'  => 'RandomClass\\Path\\Goes\\Here',
+            ]
+        ]);
+
+        $form_config = new ManagerFactory();
+
+        $this->assertThrows(function () use ($form_config) {
+            $form_config->get('test_form');
+        }, MissingManagerMailableException::class);
+    }
+
+    public function test_mailto_is_not_empty()
+    {
+        Config::set('statamic-forms.forms.test_form', [
+            'transactional' => [
+                '::enabled' => true,
+                '::fake'    => false,
+                'mailable'  => 'RandomClass\\Path\\Goes\\Here',
+                'mailto'    => [],
+            ]
+        ]);
+
+        $form_config = new ManagerFactory();
+
+        $this->assertThrows(function () use ($form_config) {
+            $form_config->get('test_form');
+        }, MissingManagerMailableException::class);
+    }
+
+    public function test_mailto_local_overrides_global()
+    {
+        Config::set('statamic-forms.forms.test_form', [
+            'transactional' => [
+                '::enabled' => true,
+                '::fake'    => false,
+                'mailto'    => [fake()->email],
+            ]
+        ]);
+
+        Config::set('statamic-forms.default', [
+            'transactional' => [
+                'mailto' => [fake()->email()]
+            ]
+        ]);
+
+        $form_config = new ManagerFactory();
+        /** @var TransactionalFormManager $manager */
+        $manager = $form_config->get('test_form')->first();
+
+        $this->assertEquals(
+            Config::get('statamic-forms.forms.test_form.transactional.mailto'),
+            $manager->recipients
+        );
     }
 }

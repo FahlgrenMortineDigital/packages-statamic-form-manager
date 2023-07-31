@@ -4,10 +4,10 @@ namespace Fahlgrendigital\StatamicFormManager\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class FormConfig extends Facade
+class ManagerFactoryFacade extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Fahlgrendigital\StatamicFormManager\Support\FormConfig::class;
+        return \Fahlgrendigital\StatamicFormManager\Support\ManagerFactory::class;
     }
 }

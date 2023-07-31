@@ -8,7 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
 
-class FormConfig
+class ManagerFactory
 {
     public function get(string $handle): Collection
     {

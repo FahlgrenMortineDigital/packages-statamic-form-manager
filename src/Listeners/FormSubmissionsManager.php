@@ -5,7 +5,7 @@ namespace Fahlgrendigital\StatamicFormManager\Listeners;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Fahlgrendigital\StatamicFormManager\Jobs\FormSubmissionSender;
 use Fahlgrendigital\StatamicFormManager\Jobs\MarkSubmissionExported;
-use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
+use Fahlgrendigital\StatamicFormManager\Support\ManagerFactory;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
 use Statamic\Events\SubmissionSaved;
@@ -17,7 +17,7 @@ class FormSubmissionsManager
     {
         /** @var Form $form */
         $form     = $event->submission->form;
-        $managers = (new FormConfig())->get($form->handle());
+        $managers = (new ManagerFactory())->get($form->handle());
 
         $managers->each(function (FormManager $manager) use ($event) {
             Bus::chain([

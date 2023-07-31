@@ -2,7 +2,6 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
-use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerConfigParamException;
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerMailableException;
@@ -18,7 +17,7 @@ class TransactionalFormManager implements FormManager
     use Subtypeable;
 
     protected string $mailable;
-    protected array $recipients;
+    public array $recipients;
 
     public static function make(string $mailable, array $recipients): self
     {
@@ -70,7 +69,11 @@ class TransactionalFormManager implements FormManager
         $prepped_data = collect($this->prepData($submission));
 
         foreach ($this->recipients as $recipient) {
-            Mail::to($recipient)->send(new $this->mailable($prepped_data));
+            $mailable = (new $this->mailable($prepped_data))
+                ->onConnection(config('statamic-form-manager.queue.connection'))
+                ->onQueue(config('statamic-form-manager.queue.queue'));
+
+            Mail::to($recipient)->queue($mailable);
         }
 
         return true;

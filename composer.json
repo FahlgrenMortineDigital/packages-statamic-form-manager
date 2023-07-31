@@ -1,5 +1,5 @@
 {
-  "name": "fahlgrendigital-packages/statamic-form-manager",
+  "name": "fahlgrenmortinedigital/packages-statamic-form-manager",
   "authors": [
     {
       "name": "Andrew Clinton",
@@ -30,7 +30,7 @@
         "Fahlgrendigital\\StatamicFormManager\\StatamicFormManagerprovider"
       ],
       "aliases": {
-        "FormConfig": "Fahlgrendigital\\StatamicFormManager\\Facades\\FormConfig"
+        "ManagerFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ManagerFactoryFacade"
       }
     }
   },
