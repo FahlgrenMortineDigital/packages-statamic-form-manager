@@ -19,6 +19,6 @@ return [
 
     'queue' => [
         'connection' => env('QUEUE_CONNECTION', 'sync'),
-        'queue'      => 'form-submissions'
+        'queue'      => env('STATAMIC_FORM_MANAGER_QUEUE', 'form-submissions')
     ],
 ];
