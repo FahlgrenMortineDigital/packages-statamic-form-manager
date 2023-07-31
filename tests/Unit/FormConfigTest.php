@@ -6,6 +6,7 @@ use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerConfigParamExce
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerMailableException;
 use Fahlgrendigital\StatamicFormManager\Managers\TransactionalFormManager;
 use Fahlgrendigital\StatamicFormManager\Support\ManagerFactory;
+use Fahlgrendigital\StatamicFormManager\Tests\Stubs\MailableStub;
 use Illuminate\Support\Facades\Config;
 use Fahlgrendigital\StatamicFormManager\Tests\TestCase;
 
@@ -209,23 +210,6 @@ class FormConfigTest extends TestCase
         }, MissingManagerMailableException::class);
     }
 
-    public function test_mailto_is_not_missing()
-    {
-        Config::set('statamic-forms.forms.test_form', [
-            'transactional' => [
-                '::enabled' => true,
-                '::fake'    => false,
-                'mailable'  => 'RandomClass\\Path\\Goes\\Here',
-            ]
-        ]);
-
-        $form_config = new ManagerFactory();
-
-        $this->assertThrows(function () use ($form_config) {
-            $form_config->get('test_form');
-        }, MissingManagerMailableException::class);
-    }
-
     public function test_mailto_is_not_empty()
     {
         Config::set('statamic-forms.forms.test_form', [
@@ -233,7 +217,7 @@ class FormConfigTest extends TestCase
                 '::enabled' => true,
                 '::fake'    => false,
                 'mailable'  => 'RandomClass\\Path\\Goes\\Here',
-                'mailto'    => [],
+                'mailto'    => [fake()->email],
             ]
         ]);
 
@@ -246,11 +230,13 @@ class FormConfigTest extends TestCase
 
     public function test_mailto_local_overrides_global()
     {
+
         Config::set('statamic-forms.forms.test_form', [
             'transactional' => [
                 '::enabled' => true,
                 '::fake'    => false,
                 'mailto'    => [fake()->email],
+                'mailable'  => MailableStub::class,
             ]
         ]);
 

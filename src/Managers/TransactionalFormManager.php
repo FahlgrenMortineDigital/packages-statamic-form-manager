@@ -30,9 +30,12 @@ class TransactionalFormManager implements FormManager
 
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
     {
-        if (!array_key_exists('mailable', $config)
-            || $config['mailable'] == null) {
-            throw new MissingManagerConfigParamException("Missing required config param [email]");
+        if (!array_key_exists('mailto', $config) || empty($config['mailto'])) {
+            throw new MissingManagerConfigParamException("Missing required config param [mailto]");
+        }
+
+        if (!array_key_exists('mailable', $config) || empty($config['mailable'])) {
+            throw new MissingManagerConfigParamException("Missing required config param [mailable]");
         }
 
         if (!class_exists($config['mailable'])) {
