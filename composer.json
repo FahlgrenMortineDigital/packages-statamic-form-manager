@@ -27,7 +27,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Fahlgrendigital\\StatamicFormManager\\StatamicFormManagerprovider"
+        "Fahlgrendigital\\StatamicFormManager\\StatamicFormManagerProvider"
       ],
       "aliases": {
         "ManagerFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ManagerFactoryFacade"
