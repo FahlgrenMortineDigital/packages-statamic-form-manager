@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Statamic\Forms\Submission;
 
-class CrmFormManager implements FormManager
+class CrmFormManager extends BaseManager implements FormManager
 {
     use CanFake;
     use Subtypeable;
@@ -54,12 +54,23 @@ class CrmFormManager implements FormManager
             throw new MissingManagerConfigParamException("Missing required config param [::url]");
         }
 
-        return static::make($maps, $url, $default);
+        /** @var FormManager $instance */
+        $instance = static::make($maps, $url, $default);
+
+        if (Arr::has($config, '::gate') && Arr::get($config, '::gate')) {
+            $instance->registerFormGate(Arr::get($config, '::gate'));
+        }
+
+        return $instance;
     }
 
     public function send(Submission $submission): bool
     {
         $prepped_data = $this->prepData($submission);
+
+        if (!$this->shouldSend($prepped_data)) {
+            return false;
+        }
 
         if ($this->isFaking()) {
             Log::debug('Data for CrmFormManager', $prepped_data);

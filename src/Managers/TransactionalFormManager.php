@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use Statamic\Forms\Submission;
 
-class TransactionalFormManager implements FormManager
+class TransactionalFormManager extends BaseManager implements FormManager
 {
     use CanFake;
     use Subtypeable;
@@ -61,15 +61,25 @@ class TransactionalFormManager implements FormManager
             throw new MissingManagerConfigParamException("Missing required config param [mailto]");
         }
 
-        return static::make(
+        $instance = static::make(
             Arr::get($config, 'mailable'),
             $mailto
         );
+
+        if (Arr::has($config, '::gate') && Arr::get($config, '::gate')) {
+            $instance->registerFormGate(Arr::get($config, '::gate'));
+        }
+
+        return $instance;
     }
 
     public function send(Submission $submission): bool
     {
-        $prepped_data = collect($this->prepData($submission));
+        $prepped_data = $this->prepData($submission);
+
+        if (!$this->shouldSend($prepped_data)) {
+            return false;
+        }
 
         foreach ($this->recipients as $recipient) {
             $mailable = (new $this->mailable($prepped_data))

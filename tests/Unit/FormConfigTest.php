@@ -230,7 +230,6 @@ class FormConfigTest extends TestCase
 
     public function test_mailto_local_overrides_global()
     {
-
         Config::set('statamic-forms.forms.test_form', [
             'transactional' => [
                 '::enabled' => true,
