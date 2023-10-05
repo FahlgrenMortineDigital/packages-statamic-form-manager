@@ -19,6 +19,19 @@ $ php artisan vendor:publish --tag=statamic-form-manager-config
 
 # Configuration
 
+**Event Listener**
+
+The form manager event listener needs to be configured so that this package picks up submissions from Statamic.
+To do this, you need to register the FormSubmissionManager in the Laravel EventServiceProvider.
+
+```bash
+protected $listen = [
+        \Statamic\Events\SubmissionSaved::class => [
+            \Fahlgrendigital\StatamicFormManager\Listeners\FormSubmissionsManager::class
+        ]
+    ];
+```
+
 `statamic-form-manager`
 
 Statamic form manager allows you to configure managers to handle the shuttling of form data to specified destinations.
@@ -32,6 +45,9 @@ Behind the scenes, form manager process form data with queues. You may specify t
 
 * statamic-form-manager.queue.connection: `env('QUEUE_CONNECTION')` or 'sync'
 * statamic-form-manager.queue.queue: `env('STATAMIC_FORM_MANAGER_QUEUE')` or 'form-submissions'
+
+> If you are using Horizon, make sure to configure one of our supervisor processes to handle the queue you 
+> set in the above config.
 
 ## Form Configuration
 
