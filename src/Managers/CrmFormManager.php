@@ -88,12 +88,27 @@ class CrmFormManager extends BaseManager implements FormManager
         $map  = array_flip($this->maps);
         $data = [];
 
-        collect($form_data)->each(function ($value, $key) use ($map, &$data) {
+        collect($form_data)->each(function ($value, $key) use ($map, &$data, $form_data) {
             if (!array_key_exists($key, $map)) {
                 return true;
             }
 
-            $data[$map[$key]] = $value;
+            $map_key = $map[$key];
+
+            if (is_array($map_key)) {
+                $map_key     = $map_key[0];
+                $transformer = $map_key[1];
+
+                if (class_exists($transformer)) {
+                    $value = (new $transformer)->handle($key, $value, $form_data);
+                } else if (is_callable($transformer)) {
+                    $value = $transformer($key, $value, $form_data);
+                }
+
+                $data[$map_key] = $value;
+            } else {
+                $data[$map[$key]] = $value;
+            }
 
             return true;
         });
