@@ -85,15 +85,14 @@ class CrmFormManager extends BaseManager implements FormManager
     # Map statamic form data to CRM fields
     protected function mappedData(array $form_data): array
     {
-        $map  = array_flip($this->maps);
         $data = [];
 
-        collect($form_data)->each(function ($value, $key) use ($map, &$data, $form_data) {
-            if (!array_key_exists($key, $map)) {
+        collect($form_data)->each(function ($value, $key) use (&$data, $form_data) {
+            if (!array_key_exists($key, $this->maps)) {
                 return true;
             }
 
-            $map_key = $map[$key];
+            $map_key = $this->maps[$key];
 
             if (is_array($map_key)) {
                 $map_key     = $map_key[0];
@@ -104,11 +103,9 @@ class CrmFormManager extends BaseManager implements FormManager
                 } else if (is_callable($transformer)) {
                     $value = $transformer($key, $value, $form_data);
                 }
-
-                $data[$map_key] = $value;
-            } else {
-                $data[$map[$key]] = $value;
             }
+
+            $data[$map_key] = $value;
 
             return true;
         });
