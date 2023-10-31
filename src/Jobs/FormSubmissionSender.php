@@ -14,11 +14,19 @@ class FormSubmissionSender implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(protected FormManager $manager, protected Submission $submission){}
+    public function __construct(protected FormManager $manager, protected Submission $submission)
+    {
+    }
 
     public function handle(): void
     {
-        $this->manager->send($this->submission);
+        $success = $this->manager->send($this->submission);
+
+        if (!$success) {
+            $this->fail(new \Exception("Failed submission"));
+
+            return;
+        }
 
         return;
     }
