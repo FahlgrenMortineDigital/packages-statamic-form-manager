@@ -69,15 +69,17 @@ class CrmFormManager extends BaseManager implements FormManager
         $prepped_data = $this->prepData($submission);
 
         if($this->debug) {
-            Log::debug(json_encode($prepped_data));
+            Log::debug('> statamic-form-manager: ' . json_encode($prepped_data));
         }
 
         if (!$this->shouldSend($submission->toArray())) {
-            return false;
+            if($this->debug) {
+                Log::debug('> statamic-form-manager: CRM gate failed');
+            }
+            return true;
         }
 
         if ($this->isFaking()) {
-            Log::debug('Data for CrmFormManager', $prepped_data);
             return $this->getFakeResponse();
         }
 
