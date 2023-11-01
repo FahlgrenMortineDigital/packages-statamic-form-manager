@@ -72,7 +72,7 @@ class CrmFormManager extends BaseManager implements FormManager
             Log::debug(json_encode($prepped_data));
         }
 
-        if (!$this->shouldSend($prepped_data)) {
+        if (!$this->shouldSend($submission->toArray())) {
             return false;
         }
 
