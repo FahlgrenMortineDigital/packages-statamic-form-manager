@@ -4,6 +4,7 @@ namespace Fahlgrendigital\StatamicFormManager\Support;
 
 use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
+use Fahlgrendigital\StatamicFormManager\Managers\BaseManager;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -25,6 +26,8 @@ class ManagerFactory
             // [0] : Manager key
             // [1] : Manager subtype (sales-force, etc)
             $manager_key_parts = explode('::', $key, 2);
+
+            /** @var BaseManager $manager */
             $manager           = static::initManager(
                 $manager_key_parts[0],
                 $config,
@@ -33,6 +36,10 @@ class ManagerFactory
 
             if (Arr::get($config, '::fake')) {
                 $this->handleFake($manager, $config);
+            }
+
+            if(Arr::get($config, '::debug')) {
+                $manager->debug($config['::debug']);
             }
 
             return $manager;

@@ -7,6 +7,14 @@ use Statamic\Forms\Submission;
 abstract class BaseManager
 {
     protected $gate;
+    protected bool $debug = false;
+
+    public function debug(bool $mode)
+    {
+        $this->debug = $mode;
+
+        return $this;
+    }
 
     public function registerFormGate($gate): self
     {

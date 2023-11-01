@@ -8,6 +8,7 @@ use Fahlgrendigital\StatamicFormManager\Exceptions\MissingManagerMailableExcepti
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\Subtypeable;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Statamic\Forms\Submission;
 
@@ -76,6 +77,10 @@ class TransactionalFormManager extends BaseManager implements FormManager
     public function send(Submission $submission): bool
     {
         $prepped_data = $this->prepData($submission);
+
+        if($this->debug) {
+            Log::debug(json_encode($prepped_data));
+        }
 
         if (!$this->shouldSend($prepped_data)) {
             return false;
