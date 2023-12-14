@@ -68,12 +68,12 @@ class CrmFormManager extends BaseManager implements FormManager
     {
         $prepped_data = $this->prepData($submission);
 
-        if($this->debug) {
+        if ($this->debug) {
             Log::debug('> statamic-form-manager: ' . json_encode($prepped_data));
         }
 
         if (!$this->shouldSend($submission->toArray())) {
-            if($this->debug) {
+            if ($this->debug) {
                 Log::debug('> statamic-form-manager: CRM gate failed');
             }
             return true;
@@ -101,8 +101,9 @@ class CrmFormManager extends BaseManager implements FormManager
             $map_key = $this->maps[$key];
 
             if (is_array($map_key)) {
-                $map_key     = $map_key[0];
-                $transformer = $map_key[1];
+                $config      = $map_key;
+                $map_key     = $config[0];
+                $transformer = $config[1];
 
                 if (class_exists($transformer)) {
                     $value = (new $transformer)->handle($key, $value, $form_data);
