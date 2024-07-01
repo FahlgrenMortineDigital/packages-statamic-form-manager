@@ -13,8 +13,9 @@ return [
      | ============================================================================
     */
     'managers' => [
-        'crm'           => Managers\CrmFormManager::class,
-        'transactional' => Managers\TransactionalFormManager::class
+        'crm'             => Managers\CrmFormManager::class,
+        'transactional'   => Managers\TransactionalFormManager::class,
+        'rest-api-simple' => Managers\RestApiManager::class,
     ],
 
     'queue' => [

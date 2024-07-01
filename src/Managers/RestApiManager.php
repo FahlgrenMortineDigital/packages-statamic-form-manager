@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
 
-class CrmFormManager extends BaseManager implements FormManager
+class RestApiManager extends BaseManager implements FormManager
 {
     # CRM Defaults key/value pairs
     protected ?array $defaults = [];
@@ -16,30 +16,8 @@ class CrmFormManager extends BaseManager implements FormManager
     # CRM POST url
     public string $url = '';
 
-    public static function init(string $key, array $config, ?string $subtype = null): FormManager
-    {
-        $form_config = new FormConfig($key, $config, $subtype);
-        $url         = $form_config->value('::url');
-        $maps        = $form_config->mergeValue('maps');
-        $default     = $form_config->value('default');
+    public string $api_key = '';
 
-        Validator::make([
-            'url' => $url
-        ], static::rules())->validate();
-
-        $instance           = new self;
-        $instance->maps     = $maps;
-        $instance->defaults = $default;
-        $instance->url      = $url;
-
-        if($form_config->localValue('::gate')){
-            $instance->registerFormGate($form_config->localValue('::gate'));
-        }
-
-        return $instance;
-    }
-
-    # Prep submission data for CRM
     protected function prepData(Submission $submission): array
     {
         $data = $this->mappedData($submission->toArray());
@@ -51,15 +29,39 @@ class CrmFormManager extends BaseManager implements FormManager
         return $data;
     }
 
+    public static function init(string $key, array $config, ?string $subtype = null): FormManager
+    {
+        $form_config = new FormConfig($key, $config, $subtype);
+        $url         = $form_config->value('::url');
+        $maps        = $form_config->mergeValue('maps');
+        $default     = $form_config->value('default');
+        $api_key     = $form_config->value('::api_key');
+
+        Validator::make([
+            'url'     => $url,
+            'api_key' => $api_key
+        ], static::rules())->validate();
+
+        $instance           = new self;
+        $instance->maps     = $maps;
+        $instance->defaults = $default;
+        $instance->url      = $url;
+
+        if ($form_config->localValue('::gate')) {
+            $instance->registerFormGate($form_config->localValue('::gate'));
+        }
+    }
+
     public static function rules(): array
     {
         return [
-            'url' => ['required', 'string']
+            'url'     => ['required', 'string'],
+            'api_key' => ['required', 'string']
         ];
     }
 
     protected function makeRequest(array $data): bool
     {
-        return Http::asForm()->post($this->url, $data)->successful();
+        return Http::withHeaders(['X-API-Key' => $this->api_key])->asJson()->get($this->url, $data)->successful();
     }
 }
