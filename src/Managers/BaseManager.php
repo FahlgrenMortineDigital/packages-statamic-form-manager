@@ -17,6 +17,12 @@ abstract class BaseManager
     # CRM => Statamic form field mappings
     protected array $maps = [];
 
+    abstract protected function makeRequest(array $data): bool;
+
+    abstract protected function prepData(Submission $submission): array;
+
+    abstract public static function rules(): array;
+
     public function debug(bool $mode): self
     {
         $this->debug = $mode;
@@ -57,12 +63,6 @@ abstract class BaseManager
 
         return $this->makeRequest($prepped_data);
     }
-
-    abstract protected function makeRequest(array $data): bool;
-
-    abstract protected function prepData(Submission $submission): array;
-
-    abstract public static function rules(): array;
 
     protected function shouldSend(array $form_data): bool
     {

@@ -20,7 +20,13 @@ class RestApiManager extends BaseManager implements FormManager
 
     protected function prepData(Submission $submission): array
     {
-        return $submission->toArray();
+        $data = $this->mappedData($submission->toArray());
+
+        if (!empty($this->defaults)) {
+            $data = array_merge($this->defaults, $data);
+        }
+
+        return $data;
     }
 
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
