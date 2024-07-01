@@ -6,6 +6,9 @@ use Illuminate\Support\ServiceProvider;
 
 class StatamicFormManagerProvider extends ServiceProvider
 {
+    const PACKAGE_NAME = 'statamic-form-manager';
+    CONST VERSION = '1.1';
+
     public function boot()
     {
         $this->publishes([
