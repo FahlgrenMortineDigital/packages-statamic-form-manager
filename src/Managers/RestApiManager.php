@@ -16,7 +16,7 @@ class RestApiManager extends BaseManager implements FormManager
     # CRM POST url
     public string $url = '';
 
-    public string $api_key = '';
+    public ?array $headers = [];
 
     protected function prepData(Submission $submission): array
     {
@@ -35,17 +35,17 @@ class RestApiManager extends BaseManager implements FormManager
         $url         = $form_config->value('::url');
         $maps        = $form_config->mergeValue('maps');
         $default     = $form_config->value('default');
-        $api_key     = $form_config->value('::api_key');
+        $headers     = $form_config->value('::headers');
 
         Validator::make([
-            'url'     => $url,
-            'api_key' => $api_key
+            'url' => $url,
         ], static::rules())->validate();
 
         $instance           = new self;
         $instance->maps     = $maps;
         $instance->defaults = $default;
         $instance->url      = $url;
+        $instance->headers  = $headers;
 
         if ($form_config->localValue('::gate')) {
             $instance->registerFormGate($form_config->localValue('::gate'));
@@ -62,6 +62,6 @@ class RestApiManager extends BaseManager implements FormManager
 
     protected function makeRequest(array $data): bool
     {
-        return Http::withHeaders(['X-API-Key' => $this->api_key])->asJson()->get($this->url, $data)->successful();
+        return Http::withHeaders($this->headers)->asJson()->get($this->url, $data)->successful();
     }
 }
