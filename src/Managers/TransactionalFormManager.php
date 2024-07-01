@@ -4,18 +4,14 @@ namespace Fahlgrendigital\StatamicFormManager\Managers;
 
 use Closure;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
-use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
 
 class TransactionalFormManager extends BaseManager implements FormManager
 {
-    use CanFake;
-
     protected string $mailable;
     public array $recipients;
 
@@ -41,29 +37,6 @@ class TransactionalFormManager extends BaseManager implements FormManager
         return $instance;
     }
 
-    public function send(Submission $submission): bool
-    {
-        $prepped_data = $this->prepData($submission);
-
-        if ($this->debug) {
-            Log::debug(json_encode($prepped_data));
-        }
-
-        if (!$this->shouldSend($prepped_data)) {
-            return false;
-        }
-
-        foreach ($this->recipients as $recipient) {
-            $mailable = (new $this->mailable($prepped_data))
-                ->onConnection(config('statamic-form-manager.queue.connection'))
-                ->onQueue(config('statamic-form-manager.queue.queue'));
-
-            Mail::to($recipient)->queue($mailable);
-        }
-
-        return true;
-    }
-
     # Prep submission data for form
     protected function prepData(Submission $submission): array
     {
@@ -80,5 +53,18 @@ class TransactionalFormManager extends BaseManager implements FormManager
                 }
             }]
         ];
+    }
+
+    protected function makeRequest(array $data): bool
+    {
+        foreach ($this->recipients as $recipient) {
+            $mailable = (new $this->mailable($data))
+                ->onConnection(config('statamic-form-manager.queue.connection'))
+                ->onQueue(config('statamic-form-manager.queue.queue'));
+
+            Mail::to($recipient)->queue($mailable);
+        }
+
+        return true;
     }
 }

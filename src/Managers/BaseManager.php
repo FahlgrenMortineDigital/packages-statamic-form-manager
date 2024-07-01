@@ -2,17 +2,22 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
+use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
+use Fahlgrendigital\StatamicFormManager\StatamicFormManagerProvider;
+use Illuminate\Support\Facades\Log;
 use Statamic\Forms\Submission;
 
 abstract class BaseManager
 {
+    use CanFake;
+
     protected $gate;
     protected bool $debug = false;
 
     # CRM => Statamic form field mappings
     protected array $maps = [];
 
-    public function debug(bool $mode)
+    public function debug(bool $mode): self
     {
         $this->debug = $mode;
 
@@ -26,6 +31,35 @@ abstract class BaseManager
         return $this;
     }
 
+    public function send(Submission $submission): bool
+    {
+        $prepped_data = $this->prepData($submission);
+
+        if ($this->debug) {
+            Log::debug(sprintf('> %s: %s', StatamicFormManagerProvider::PACKAGE_NAME, json_encode($prepped_data)));
+        }
+
+        if (!$this->shouldSend($submission->toArray())) {
+            if ($this->debug) {
+                Log::debug(sprintf('> %s: CRM gate failed', StatamicFormManagerProvider::PACKAGE_NAME));
+            }
+
+            return false;
+        }
+
+        if ($this->isFaking()) {
+            if ($this->debug) {
+                Log::debug(sprintf('> %s: Sending fake response', StatamicFormManagerProvider::PACKAGE_NAME));
+            }
+
+            return $this->getFakeResponse();
+        }
+
+        return $this->makeRequest($prepped_data);
+    }
+
+    abstract protected function makeRequest(array $data): bool;
+
     abstract protected function prepData(Submission $submission): array;
 
     abstract public static function rules(): array;
@@ -38,6 +72,9 @@ abstract class BaseManager
 
         $gate = $this->gate;
 
+        // Gate can be on eof the following:
+        // 1. callback
+        // 2. Gate class
         if (class_exists($this->gate)) {
             return (new $gate)->handle($form_data);
         } else if (is_callable($this->gate)) {

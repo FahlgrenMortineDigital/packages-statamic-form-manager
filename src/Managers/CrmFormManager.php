@@ -3,17 +3,13 @@
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
-use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
 
 class CrmFormManager extends BaseManager implements FormManager
 {
-    use CanFake;
-
     # CRM Defaults key/value pairs
     protected ?array $defaults = [];
 
@@ -43,30 +39,6 @@ class CrmFormManager extends BaseManager implements FormManager
         return $instance;
     }
 
-    public function send(Submission $submission): bool
-    {
-        $prepped_data = $this->prepData($submission);
-
-        if ($this->debug) {
-            Log::debug('> statamic-form-manager: ' . json_encode($prepped_data));
-        }
-
-        if (!$this->shouldSend($submission->toArray())) {
-            if ($this->debug) {
-                Log::debug('> statamic-form-manager: CRM gate failed');
-            }
-            return true;
-        }
-
-        if ($this->isFaking()) {
-            return $this->getFakeResponse();
-        }
-
-        $response = Http::asForm()->post($this->url, $prepped_data);
-
-        return $response->successful();
-    }
-
     # Prep submission data for CRM
     protected function prepData(Submission $submission): array
     {
@@ -84,5 +56,10 @@ class CrmFormManager extends BaseManager implements FormManager
         return [
             'url' => ['required', 'string']
         ];
+    }
+
+    protected function makeRequest(array $data): bool
+    {
+        return Http::asForm()->post($this->url, $data)->successful();
     }
 }
