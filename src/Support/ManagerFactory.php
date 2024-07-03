@@ -5,6 +5,7 @@ namespace Fahlgrendigital\StatamicFormManager\Support;
 use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Fahlgrendigital\StatamicFormManager\Managers\BaseManager;
+use Fahlgrendigital\StatamicFormManager\StatamicFormManagerProvider;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -46,10 +47,13 @@ class ManagerFactory
         })->flatten();
     }
 
+    /**
+     * @throws Exception
+     */
     protected function initManager(string $key, array $config, ?string $subtype = null): FormManager
     {
         if (!array_key_exists($key, Config::get('statamic-form-manager.managers'))) {
-            throw new Exception('Form manager map not found');
+            throw new Exception(sprintf("%s: Form manager map not found [$key]", StatamicFormManagerProvider::PACKAGE_NAME));
         }
 
         $class = Config::get(sprintf("statamic-form-manager.managers.%s", $key));
