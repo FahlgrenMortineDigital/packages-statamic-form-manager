@@ -50,6 +50,8 @@ class RestApiManager extends BaseManager implements FormManager
         if ($form_config->localValue('::gate')) {
             $instance->registerFormGate($form_config->localValue('::gate'));
         }
+
+        return $instance;
     }
 
     public static function rules(): array
