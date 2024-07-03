@@ -58,8 +58,7 @@ class RestApiManager extends BaseManager implements FormManager
     public static function rules(): array
     {
         return [
-            'url'     => ['required', 'string'],
-            'api_key' => ['required', 'string']
+            'url'     => ['required', 'string']
         ];
     }
 
