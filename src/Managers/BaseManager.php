@@ -165,6 +165,11 @@ abstract class BaseManager
             $data = array_merge($this->defaults, $data);
         }
 
+        if($this->debug) {
+            Log::debug(sprintf('> %s: Form Data:', StatamicFormManagerProvider::PACKAGE_NAME));
+            Log::debug(json_encode($data));
+        }
+
         return $data;
     }
 }
