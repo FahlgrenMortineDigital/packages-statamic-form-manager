@@ -27,7 +27,7 @@ class ManagerFactory
             // [1] : Manager subtype (sales-force, etc)
             $manager_key_parts = explode('::', $key, 2);
 
-            /** @var BaseManager $manager */
+            /** @var BaseManager|FormManager $manager */
             $manager           = static::initManager(
                 $manager_key_parts[0],
                 $config,
