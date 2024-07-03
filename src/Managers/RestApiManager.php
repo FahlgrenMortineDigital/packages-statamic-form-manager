@@ -6,6 +6,7 @@ use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\ValidationException;
 use Statamic\Forms\Submission;
 
 class RestApiManager extends BaseManager implements FormManager
@@ -29,6 +30,9 @@ class RestApiManager extends BaseManager implements FormManager
         return $data;
     }
 
+    /**
+     * @throws ValidationException
+     */
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
     {
         $form_config = new FormConfig($key, $config, $subtype);
@@ -64,6 +68,6 @@ class RestApiManager extends BaseManager implements FormManager
 
     protected function makeRequest(array $data): bool
     {
-        return Http::withHeaders($this->headers)->asJson()->get($this->url, $data)->successful();
+        return Http::withHeaders($this->headers)->asJson()->post($this->url, $data)->successful();
     }
 }
