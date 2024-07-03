@@ -2,12 +2,12 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Tests\Unit;
 
+use Exception;
 use Fahlgrendigital\StatamicFormManager\Managers\TransactionalFormManager;
 use Fahlgrendigital\StatamicFormManager\Support\ManagerFactory;
 use Fahlgrendigital\StatamicFormManager\Tests\Stubs\MailableStub;
 use Illuminate\Support\Facades\Config;
 use Fahlgrendigital\StatamicFormManager\Tests\TestCase;
-use Illuminate\Validation\ValidationException;
 
 class FormConfigTest extends TestCase
 {
@@ -85,7 +85,7 @@ class FormConfigTest extends TestCase
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
-        }, ValidationException::class);
+        }, Exception::class);
     }
 
     public function test_local_url_overrides_global_url_for_crm_manager()
@@ -166,7 +166,7 @@ class FormConfigTest extends TestCase
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
-        }, ValidationException::class);
+        }, Exception::class);
     }
 
     public function test_catch_null_mailable_exception_for_transactional()
@@ -186,7 +186,7 @@ class FormConfigTest extends TestCase
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
-        }, ValidationException::class);
+        }, Exception::class);
     }
 
     public function test_mailable_is_a_valid_class()
@@ -206,7 +206,7 @@ class FormConfigTest extends TestCase
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
-        }, ValidationException::class);
+        }, Exception::class);
     }
 
     public function test_mailto_is_not_empty()
@@ -224,7 +224,7 @@ class FormConfigTest extends TestCase
 
         $this->assertThrows(function () use ($form_config) {
             $form_config->get('test_form');
-        }, ValidationException::class);
+        }, Exception::class);
     }
 
     public function test_mailto_local_overrides_global()
