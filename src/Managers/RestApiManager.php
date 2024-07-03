@@ -2,11 +2,10 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
+use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\ValidationException;
 use Statamic\Forms\Submission;
 
 class RestApiManager extends BaseManager implements FormManager
@@ -31,7 +30,7 @@ class RestApiManager extends BaseManager implements FormManager
     }
 
     /**
-     * @throws ValidationException
+     * @throws Exception
      */
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
     {
@@ -41,9 +40,7 @@ class RestApiManager extends BaseManager implements FormManager
         $default     = $form_config->value('default');
         $headers     = $form_config->value('::headers');
 
-        Validator::make([
-            'url' => $url,
-        ], static::rules())->validate();
+        static::validateData(['url' => $url]);
 
         $instance           = new self;
         $instance->maps     = $maps;

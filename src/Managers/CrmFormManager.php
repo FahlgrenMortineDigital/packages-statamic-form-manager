@@ -2,10 +2,10 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
+use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
 
 class CrmFormManager extends BaseManager implements FormManager
@@ -16,6 +16,9 @@ class CrmFormManager extends BaseManager implements FormManager
     # CRM POST url
     public string $url = '';
 
+    /**
+     * @throws Exception
+     */
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
     {
         $form_config = new FormConfig($key, $config, $subtype);
@@ -23,9 +26,7 @@ class CrmFormManager extends BaseManager implements FormManager
         $maps        = $form_config->mergeValue('maps');
         $default     = $form_config->value('default');
 
-        Validator::make([
-            'url' => $url
-        ], static::rules())->validate();
+        static::validateData(['url' => $url]);
 
         $instance           = new self;
         $instance->maps     = $maps;

@@ -3,11 +3,11 @@
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
 use Closure;
+use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
 
 class TransactionalFormManager extends BaseManager implements FormManager
@@ -15,16 +15,19 @@ class TransactionalFormManager extends BaseManager implements FormManager
     protected string $mailable;
     public array $recipients;
 
+    /**
+     * @throws Exception
+     */
     public static function init(string $key, array $config, ?string $subtype = null): FormManager
     {
         $form_config = new FormConfig($key, $config, $subtype);
         $mailto      = $form_config->value('mailto');
         $mailable    = $form_config->value('mailable');
 
-        Validator::make([
+        static::validateData([
             'mailto'   => $mailto,
             'mailable' => $mailable
-        ], static::rules())->validate();
+        ]);
 
         $instance             = new self;
         $instance->mailable   = $mailable;

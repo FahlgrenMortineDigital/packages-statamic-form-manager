@@ -5,6 +5,7 @@ namespace Fahlgrendigital\StatamicFormManager\Managers;
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\StatamicFormManagerProvider;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
 
 abstract class BaseManager
@@ -62,6 +63,24 @@ abstract class BaseManager
         }
 
         return $this->makeRequest($prepped_data);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    protected static function validateData(array $data): bool
+    {
+        $validator = Validator::make($data, static::rules());
+
+        if($validator->fails()) {
+            throw new \Exception(sprintf(
+                '%s: Validation failed for: %s',
+                StatamicFormManagerProvider::PACKAGE_NAME,
+                $validator->errors()->toJson()
+            ));
+        }
+
+        return true;
     }
 
     protected function shouldSend(array $form_data): bool
