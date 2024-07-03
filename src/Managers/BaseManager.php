@@ -2,6 +2,9 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Managers;
 
+use Fahlgrendigital\StatamicFormManager\Contracts\FormFieldTransformer;
+use Fahlgrendigital\StatamicFormManager\Contracts\FormGate;
+use Fahlgrendigital\StatamicFormManager\Exceptions\MissingFormFieldTransformerException;
 use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\StatamicFormManagerProvider;
 use Illuminate\Support\Facades\Log;
@@ -12,11 +15,15 @@ abstract class BaseManager
 {
     use CanFake;
 
-    protected $gate;
+    protected string $gate;
     protected bool $debug = false;
 
-    # CRM => Statamic form field mappings
+    # local => remote
     protected array $maps = [];
+
+    protected array $computed = [];
+
+    protected array $defaults = [];
 
     abstract protected function makeRequest(array $data): bool;
 
@@ -72,7 +79,7 @@ abstract class BaseManager
     {
         $validator = Validator::make($data, static::rules());
 
-        if($validator->fails()) {
+        if ($validator->fails()) {
             throw new \Exception(sprintf(
                 '%s: Validation failed for: %s',
                 StatamicFormManagerProvider::PACKAGE_NAME,
@@ -94,7 +101,7 @@ abstract class BaseManager
         // Gate can be on eof the following:
         // 1. callback
         // 2. Gate class
-        if (class_exists($this->gate)) {
+        if (class_exists($this->gate) && is_a($this->gate, FormGate::class, true)) {
             return (new $gate)->handle($form_data);
         } else if (is_callable($this->gate)) {
             return $gate($form_data);
@@ -103,7 +110,7 @@ abstract class BaseManager
         return true;
     }
 
-    protected function mappedData(array $form_data): array
+    public function mappedData(array $form_data): array
     {
         $data = [];
 
@@ -119,10 +126,16 @@ abstract class BaseManager
                 $map_key     = $config[0];
                 $transformer = $config[1];
 
-                if (class_exists($transformer)) {
+                if (class_exists($transformer) && is_a($transformer, FormFieldTransformer::class, true)) {
                     $value = (new $transformer)->handle($key, $value, $form_data);
                 } else if (is_callable($transformer)) {
                     $value = $transformer($key, $value, $form_data);
+                } else {
+                    throw new MissingFormFieldTransformerException(sprintf(
+                        '> %s: Transformer not found for [%s]',
+                        StatamicFormManagerProvider::PACKAGE_NAME,
+                        $key
+                    ));
                 }
             }
 
@@ -130,6 +143,27 @@ abstract class BaseManager
 
             return true;
         });
+
+        // Loop through each computed and add to data
+        collect($this->computed)->each(function ($value, $key) use (&$data, $form_data) {
+            if (class_exists($value) && is_a($value, FormFieldTransformer::class, true)) {
+                $value = (new $value)->handle(key: $key, value: null, form_data: $form_data);
+            } else if (is_callable($key)) {
+                $value = $key(key: $key, value: null, form_data: $form_data);
+            } else {
+                throw new MissingFormFieldTransformerException(sprintf(
+                    '> %s: Transformer not found for [%s]',
+                    StatamicFormManagerProvider::PACKAGE_NAME,
+                    $key
+                ));
+            }
+
+            $data[$key] = $value;
+        });
+
+        if (!empty($this->defaults)) {
+            $data = array_merge($this->defaults, $data);
+        }
 
         return $data;
     }

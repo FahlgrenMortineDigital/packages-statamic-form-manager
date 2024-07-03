@@ -10,9 +10,6 @@ use Statamic\Forms\Submission;
 
 class CrmFormManager extends BaseManager implements FormManager
 {
-    # CRM Defaults key/value pairs
-    protected ?array $defaults = [];
-
     # CRM POST url
     public string $url = '';
 
@@ -41,15 +38,13 @@ class CrmFormManager extends BaseManager implements FormManager
     }
 
     # Prep submission data for CRM
+
+    /**
+     * @throws Exception
+     */
     protected function prepData(Submission $submission): array
     {
-        $data = $this->mappedData($submission->toArray());
-
-        if (!empty($this->defaults)) {
-            $data = array_merge($this->defaults, $data);
-        }
-
-        return $data;
+        return $this->mappedData($submission->toArray());
     }
 
     public static function rules(): array
