@@ -35,7 +35,7 @@ class RestApiManager extends BaseManager implements FormManager
         $url         = $form_config->value('::url');
         $maps        = $form_config->mergeValue('maps');
         $computed    = $form_config->mergeValue('computed');
-        $default     = $form_config->value('default');
+        $default     = $form_config->mergeValue('default');
         $headers     = $form_config->value('::headers');
 
         static::validateData(['url' => $url]);
