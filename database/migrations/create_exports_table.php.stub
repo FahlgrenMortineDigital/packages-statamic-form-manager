@@ -13,15 +13,14 @@ class CreateExportsTable extends Migration
     {
         Schema::create('exports', function (Blueprint $table) {
             $table->id();
-            $table->string('form_id')->index();
             $table->string('form_handle')->index();
+            $table->string('submission_id')->index();
             $table->string('destination')->index();
             $table->json('submission_payload')->nullable();
             $table->text('submission_markup')->nullable();
             $table->timestamp('exported_at')->nullable();
             $table->timestamp('failed_at')->nullable();
             $table->timestamps();
-            $table->index(['form_id', 'destination']);
         });
     }
 

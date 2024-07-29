@@ -5,6 +5,7 @@ namespace Fahlgrendigital\StatamicFormManager\Connector;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Contracts\MailableConnector as MailableConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
+use Illuminate\Mail\Mailable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use Statamic\Forms\Submission;
@@ -89,5 +90,11 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
     public function setMailable(string $mailable_class): void
     {
         $this->mailable = $mailable_class;
+    }
+
+    public function logPayload(Submission $submission): bool
+    {
+        //todo - implement logging for mailable connections
+        return false;
     }
 }

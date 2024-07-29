@@ -2,12 +2,13 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Facades;
 
+use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
 use Illuminate\Support\Facades\Facade;
 
-class ManagerFactoryFacade extends Facade
+class ConnectionFactoryFacade extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory::class;
+        return ConnectionFactory::class;
     }
 }

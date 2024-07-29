@@ -2,6 +2,7 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Data;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Statamic\Forms\Submission;
 
@@ -9,9 +10,18 @@ class Export extends Model
 {
     protected $guarded = [];
 
+    protected $casts = [
+        'submission_payload' => 'array',
+    ];
+
     public function getConnectionName(): string
     {
-        return config('statamic-form-manager.exports.connection');
+        return config('statamic-formidable.exports.connection');
+    }
+
+    public function scopeForSubmission(Builder $query, Submission $submission)
+    {
+        $query->where('submission_id', $submission->id());
     }
 
     public function failed(): void
@@ -27,7 +37,7 @@ class Export extends Model
     public static function newFormSubmission(Submission $submission, string $destination): Export
     {
         return static::create([
-            'submission_id' => $submission->id,
+            'submission_id' => $submission->id(),
             'form_handle'   => $submission->form->handle(),
             'destination'   => $destination,
         ]);

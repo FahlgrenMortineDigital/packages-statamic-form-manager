@@ -6,7 +6,7 @@
       "email": "andrew.clinton@fahlgren.com"
     }
   ],
-  "description": "Statamic form submission management. Send data to 3rd party vendors like CRMs and custom REST endpoints.",
+  "description": "Statamic form submission management. Send submission data to 3rd party vendors like CRMs and custom REST endpoints.",
   "keywords": [
     "statamic",
     "cms",
@@ -31,14 +31,14 @@
   "extra": {
     "statamic": {
       "name": "Formidable",
-      "description": "Form submission management. Send data to 3rd party vendors like CRMs and custom REST endpoints."
+      "description": "Statamic form submission management. Send submission data to 3rd party vendors like CRMs and custom REST endpoints."
     },
     "laravel": {
       "providers": [
-        "Fahlgrendigital\\StatamicFormManager\\StatamicFormManagerProvider"
+        "Fahlgrendigital\\StatamicFormManager\\StatamicFormidableFormDataProvider"
       ],
       "aliases": {
-        "ManagerFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ManagerFactoryFacade"
+        "ManagerFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ConnectionFactoryFacade"
       }
     }
   },

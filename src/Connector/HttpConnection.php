@@ -3,16 +3,22 @@
 namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Exception;
+use Fahlgrendigital\StatamicFormManager\Connector\Traits\HasHeaders;
+use Fahlgrendigital\StatamicFormManager\Connector\Traits\HasHttpVerbs;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Contracts\HttpConnector;
+use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
 use Statamic\Forms\Submission;
 
 class HttpConnection extends BaseConnection implements ConnectorContract, HttpConnector
 {
+    use HasHeaders;
+    use HasHttpVerbs;
+
     public string $url = '';
-    public ?array $headers = [];
+    public static string $default_method = 'GET';
 
     /**
      * @throws Exception
@@ -21,10 +27,10 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
     {
         $form_config = new FormConfig($key, $config, $subtype);
         $url         = $form_config->value('::url');
+        $headers     = $form_config->value('::headers');
         $maps        = $form_config->mergeValue('maps');
         $computed    = $form_config->mergeValue('computed');
         $default     = $form_config->mergeValue('default');
-        $headers     = $form_config->value('::headers');
 
         static::validateData(['url' => $url]);
 
@@ -35,6 +41,7 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
         $instance->headers  = $headers;
         $instance->computed = $computed;
         $instance->handle   = $form_config->key();
+        $instance->setHttpVerb($form_config->value('::method', static::$default_method));
 
         if ($form_config->localValue('::gate')) {
             $instance->registerFormGate($form_config->localValue('::gate'));
@@ -60,6 +67,24 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
 
     protected function makeRequest(array $data): bool
     {
-        return Http::withHeaders($this->headers)->asJson()->post($this->url, $data)->successful();
+        if ($this->method === 'POST') {
+            return Http::withHeaders($this->headers)->post($this->url, $data)->successful();
+        }
+
+        return Http::withHeaders($this->headers)->asJson()->get($this->url, $data)->successful();
+    }
+
+    public function logPayload(Submission $submission): bool
+    {
+        $data   = $this->prepData($submission);
+        $export = Export::forSubmission($submission)->first();
+
+        if(!$export) {
+            return false;
+        }
+
+        $export->update(['submission_payload' => $data]);
+
+        return true;
     }
 }

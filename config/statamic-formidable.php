@@ -18,7 +18,9 @@ return [
     ],
 
     'exports' => [
-        'connection' => env('FORMIDABLE_EXPORT_CONNECTION', 'mysql'),
+        'connection'              => env('FORMIDABLE_EXPORT_CONNECTION', 'mysql'),
+        'expiration_window_value' => env('FORMIDABLE_EXPORT_EXPIRATION_WINDOW_VALUE', 30),
+        'expiration_window_unit'  => env('FORMIDABLE_EXPORT_EXPIRATION_WINDOW_UNIT', 'days'),
     ],
 
     /**

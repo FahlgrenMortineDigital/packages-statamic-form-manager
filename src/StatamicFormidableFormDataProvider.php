@@ -2,19 +2,28 @@
 
 namespace Fahlgrendigital\StatamicFormManager;
 
+use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
+use Fahlgrendigital\StatamicFormManager\Console\Commands\CleanOldExports;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
+use Fahlgrendigital\StatamicFormManager\Listeners\FormSubmissionsManager;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
+use Statamic\Events\SubmissionSaved;
 use Statamic\Facades\CP\Nav;
 use Statamic\Providers\AddonServiceProvider;
 
-class StatamicFormManagerProvider extends AddonServiceProvider
+class StatamicFormidableFormDataProvider extends AddonServiceProvider
 {
     const PACKAGE_NAME = 'statamic-formidable';
     const VERSION = '1.2';
 
     protected $routes = [
         'cp' => __DIR__.'/../routes/cp.php',
+    ];
+
+    protected $commands = [
+        CleanOldExports::class
     ];
 
     public function boot(): void
@@ -33,11 +42,17 @@ class StatamicFormManagerProvider extends AddonServiceProvider
     public function bootAddon(): void
     {
         $this->bootDatabase()->bootAddonNav()->bootAddonViews();
+
+        Event::listen(SubmissionSaved::class, FormSubmissionsManager::class);
     }
 
     public function register(): void
     {
         $this->registerAddonConfig();
+
+        $this->app->singleton(ConnectionFactory::class, function () {
+            return new ConnectionFactory();
+        });
     }
 
     protected function registerAddonConfig(): self
@@ -57,14 +72,14 @@ class StatamicFormManagerProvider extends AddonServiceProvider
     protected function bootDatabase(): self
     {
         // table exists so bail
-        if (Schema::connection(config('statamic-form-manager.export.connection'))->hasTable((new Export())->getTable())) {
+        if (Schema::connection(config('statamic-formidable.export.connection'))->hasTable((new Export())->getTable())) {
             return $this;
         }
 
         // migrations have not been run so run 'em
 
         $defaultConnection = DB::getDefaultConnection();
-        DB::setDefaultConnection(config('statamic-form-manager.exports.connection'));
+        DB::setDefaultConnection(config('statamic-formidable.exports.connection'));
 
         require_once(__DIR__ . '/../database/migrations/create_exports_table.php.stub');
         (new \CreateExportsTable())->up();

@@ -6,7 +6,7 @@ use Fahlgrendigital\StatamicFormManager\Contracts\FormFieldTransformer;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormGate;
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingFormFieldTransformerException;
 use Fahlgrendigital\StatamicFormManager\Connector\Traits\CanFake;
-use Fahlgrendigital\StatamicFormManager\StatamicFormManagerProvider;
+use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
@@ -29,6 +29,8 @@ abstract class BaseConnection
     abstract protected function makeRequest(array $data): bool;
 
     abstract protected function prepData(Submission $submission): array;
+
+    abstract public function logPayload(Submission $submission): bool;
 
     abstract public static function rules(): array;
 
@@ -56,12 +58,12 @@ abstract class BaseConnection
         $prepped_data = $this->prepData($submission);
 
         if ($this->debug) {
-            Log::debug(sprintf('> %s: %s', StatamicFormManagerProvider::PACKAGE_NAME, json_encode($prepped_data)));
+            Log::debug(sprintf('> %s: %s', StatamicFormidableFormDataProvider::PACKAGE_NAME, json_encode($prepped_data)));
         }
 
         if (!$this->shouldSend($submission->toArray())) {
             if ($this->debug) {
-                Log::debug(sprintf('> %s: CRM gate failed', StatamicFormManagerProvider::PACKAGE_NAME));
+                Log::debug(sprintf('> %s: CRM gate failed', StatamicFormidableFormDataProvider::PACKAGE_NAME));
             }
 
             return false;
@@ -69,7 +71,7 @@ abstract class BaseConnection
 
         if ($this->isFaking()) {
             if ($this->debug) {
-                Log::debug(sprintf('> %s: Sending fake response', StatamicFormManagerProvider::PACKAGE_NAME));
+                Log::debug(sprintf('> %s: Sending fake response', StatamicFormidableFormDataProvider::PACKAGE_NAME));
             }
 
             return $this->getFakeResponse();
@@ -88,7 +90,7 @@ abstract class BaseConnection
         if ($validator->fails()) {
             throw new \Exception(sprintf(
                 '%s: Validation failed for: %s',
-                StatamicFormManagerProvider::PACKAGE_NAME,
+                StatamicFormidableFormDataProvider::PACKAGE_NAME,
                 $validator->errors()->toJson()
             ));
         }
@@ -139,7 +141,7 @@ abstract class BaseConnection
                 } else {
                     throw new MissingFormFieldTransformerException(sprintf(
                         '> %s: Transformer not found for [%s]',
-                        StatamicFormManagerProvider::PACKAGE_NAME,
+                        StatamicFormidableFormDataProvider::PACKAGE_NAME,
                         $key
                     ));
                 }
@@ -159,7 +161,7 @@ abstract class BaseConnection
             } else {
                 throw new MissingFormFieldTransformerException(sprintf(
                     '> %s: Transformer not found for [%s]',
-                    StatamicFormManagerProvider::PACKAGE_NAME,
+                    StatamicFormidableFormDataProvider::PACKAGE_NAME,
                     $key
                 ));
             }

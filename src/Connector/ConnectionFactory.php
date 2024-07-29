@@ -5,7 +5,7 @@ namespace Fahlgrendigital\StatamicFormManager\Connector;
 use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
-use Fahlgrendigital\StatamicFormManager\StatamicFormManagerProvider;
+use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Config;
@@ -53,7 +53,7 @@ class ConnectionFactory
     protected function initManager(string $key, array $config, ?string $subtype = null): ConnectorContract
     {
         if (!array_key_exists($key, Config::get('statamic-formidable.connectors'))) {
-            throw new Exception(sprintf("%s: Form manager map not found [$key]", StatamicFormManagerProvider::PACKAGE_NAME));
+            throw new Exception(sprintf("%s: Form manager map not found [$key]", StatamicFormidableFormDataProvider::PACKAGE_NAME));
         }
 
         $class = Config::get(sprintf("statamic-formidable.connectors.%s", $key));

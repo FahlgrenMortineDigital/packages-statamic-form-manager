@@ -2,14 +2,14 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Connector\Traits;
 
-use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
+use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
 
 trait CanFake
 {
     protected bool $is_faking = false;
     protected ?string $fake_mode = null;
 
-    public function fakeIt(): ConnectorContract
+    public function fakeIt(): BaseConnection
     {
         $this->is_faking = true;
 
@@ -26,14 +26,14 @@ trait CanFake
         return $this->isSuccess();
     }
 
-    public function fakeSuccess(): ConnectorContract
+    public function fakeSuccess(): BaseConnection
     {
         $this->fake_mode = 'success';
 
         return $this;
     }
 
-    public function fakeFail(): ConnectorContract
+    public function fakeFail(): BaseConnection
     {
         $this->fake_mode = 'fail';
 

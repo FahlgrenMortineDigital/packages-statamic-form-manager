@@ -15,14 +15,14 @@ class SendFormSubmission implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(protected ConnectorContract $manager, protected Submission $submission)
+    public function __construct(protected ConnectorContract $connector, protected Submission $submission)
     {
     }
 
     public function handle(): void
     {
-        $export  = Export::newFormSubmission($this->submission, $this->manager->getHandle());
-        $success = $this->manager->send($this->submission);
+        $export  = Export::newFormSubmission($this->submission, $this->connector->getHandle());
+        $success = $this->connector->send($this->submission);
 
         if (!$success) {
             $this->fail(new \Exception("Failed submission"));
@@ -30,5 +30,8 @@ class SendFormSubmission implements ShouldQueue
         } else {
             $export->succeeded();
         }
+
+        //todo - add option for encrypting submissions
+        $this->connector->logPayload($this->submission);
     }
 }

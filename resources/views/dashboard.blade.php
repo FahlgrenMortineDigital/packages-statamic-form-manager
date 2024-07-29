@@ -1,10 +1,10 @@
 @extends('statamic::layout')
-@section('title', 'Form Submission Exports')
+@section('title', 'Formidable Exports')
 
 @section('content')
 
     <header class="mb-3">
-        <h1>Formidable</h1>
+        <h1>Formidable Exports</h1>
     </header>
 
     @include('statamic::partials.docs-callout', [

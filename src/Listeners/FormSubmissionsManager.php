@@ -4,9 +4,7 @@ namespace Fahlgrendigital\StatamicFormManager\Listeners;
 
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Jobs\SendFormSubmission;
-use Fahlgrendigital\StatamicFormManager\Jobs\MarkSubmissionExported;
 use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
-use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Config;
 use Statamic\Events\SubmissionSaved;
 use Statamic\Forms\Form;
