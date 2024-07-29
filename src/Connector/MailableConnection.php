@@ -1,24 +1,23 @@
 <?php
 
-namespace Fahlgrendigital\StatamicFormManager\Managers;
+namespace Fahlgrendigital\StatamicFormManager\Connector;
 
-use Closure;
-use Exception;
-use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
+use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
+use Fahlgrendigital\StatamicFormManager\Contracts\MailableConnector as MailableConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use Statamic\Forms\Submission;
 
-class TransactionalFormManager extends BaseManager implements FormManager
+class MailableConnection extends BaseConnection implements MailableConnectorContract, ConnectorContract
 {
     protected string $mailable;
-    public array $recipients;
+    protected array $recipients;
 
     /**
-     * @throws Exception
+     * @throws \Exception
      */
-    public static function init(string $key, array $config, ?string $subtype = null): FormManager
+    public static function init(string $key, array $config, ?string $subtype = null): ConnectorContract
     {
         $form_config = new FormConfig($key, $config, $subtype);
         $mailto      = $form_config->value('mailto');
@@ -29,9 +28,10 @@ class TransactionalFormManager extends BaseManager implements FormManager
             'mailable' => $mailable
         ]);
 
-        $instance             = new self;
-        $instance->mailable   = $mailable;
-        $instance->recipients = is_array($mailto) ? $mailto : Arr::wrap($mailto);
+        $instance         = new self;
+        $instance->handle = $form_config->key();
+        $instance->setMailable($mailable);
+        $instance->setRecipients(is_array($mailto) ? $mailto : Arr::wrap($mailto));
 
         if ($form_config->localValue('::gate')) {
             $instance->registerFormGate($form_config->localValue('::gate'));
@@ -50,7 +50,7 @@ class TransactionalFormManager extends BaseManager implements FormManager
     {
         return [
             'mailto'   => ['required'],
-            'mailable' => ['required', function (string $attribute, mixed $value, Closure $fail) {
+            'mailable' => ['required', function (string $attribute, mixed $value, \Closure $fail) {
                 if (!class_exists($value)) {
                     $fail(sprintf("The %s class does not exist.", $value));
                 }
@@ -69,5 +69,25 @@ class TransactionalFormManager extends BaseManager implements FormManager
         }
 
         return true;
+    }
+
+    public function setRecipients(array $recipients): void
+    {
+        $this->recipients = $recipients;
+    }
+
+    public function getRecipients(): array
+    {
+        return $this->recipients;
+    }
+
+    public function getMailable(): string
+    {
+        return $this->mailable;
+    }
+
+    public function setMailable(string $mailable_class): void
+    {
+        $this->mailable = $mailable_class;
     }
 }

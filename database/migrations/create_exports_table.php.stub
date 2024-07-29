@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateExportsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('exports', function (Blueprint $table) {
+            $table->id();
+            $table->string('form_id')->index();
+            $table->string('form_handle')->index();
+            $table->string('destination')->index();
+            $table->json('submission_payload')->nullable();
+            $table->text('submission_markup')->nullable();
+            $table->timestamp('exported_at')->nullable();
+            $table->timestamp('failed_at')->nullable();
+            $table->timestamps();
+            $table->index(['form_id', 'destination']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('exports');
+    }
+};

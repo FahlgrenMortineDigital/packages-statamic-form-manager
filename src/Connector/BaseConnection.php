@@ -1,22 +1,23 @@
 <?php
 
-namespace Fahlgrendigital\StatamicFormManager\Managers;
+namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Fahlgrendigital\StatamicFormManager\Contracts\FormFieldTransformer;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormGate;
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingFormFieldTransformerException;
-use Fahlgrendigital\StatamicFormManager\Managers\Traits\CanFake;
+use Fahlgrendigital\StatamicFormManager\Connector\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\StatamicFormManagerProvider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Statamic\Forms\Submission;
 
-abstract class BaseManager
+abstract class BaseConnection
 {
     use CanFake;
 
     protected string $gate;
     protected bool $debug = false;
+    protected ?string $handle = null;
 
     # local => remote
     protected array $maps = [];
@@ -36,6 +37,11 @@ abstract class BaseManager
         $this->debug = $mode;
 
         return $this;
+    }
+
+    public function getHandle(): string
+    {
+        return $this->handle;
     }
 
     public function registerFormGate($gate): self

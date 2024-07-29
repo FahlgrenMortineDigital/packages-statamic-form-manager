@@ -8,6 +8,6 @@ class ManagerFactoryFacade extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \Fahlgrendigital\StatamicFormManager\Support\ManagerFactory::class;
+        return \Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory::class;
     }
 }

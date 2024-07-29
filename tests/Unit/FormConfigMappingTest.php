@@ -2,10 +2,10 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Tests\Unit;
 
-use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
+use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingFormFieldTransformerException;
-use Fahlgrendigital\StatamicFormManager\Managers\BaseManager;
-use Fahlgrendigital\StatamicFormManager\Support\ManagerFactory;
+use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
+use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
 use Fahlgrendigital\StatamicFormManager\Tests\Stubs\BadTransformer;
 use Fahlgrendigital\StatamicFormManager\Tests\Stubs\GoodTransformer;
 use Fahlgrendigital\StatamicFormManager\Tests\TestCase;
@@ -15,8 +15,8 @@ class FormConfigMappingTest extends TestCase
 {
     public function test_fails_maps_computed_values_for_rest_api_manager()
     {
-        Config::set('statamic-forms.forms.test_form', [
-            'rest-api-simple::test-1' => [
+        Config::set('statamic-formidable-forms.forms.test_form', [
+            'http::test-1' => [
                 '::enabled'   => true,
                 '::fake'      => false,
                 '::fake-type' => 'success',
@@ -31,8 +31,8 @@ class FormConfigMappingTest extends TestCase
         ]);
 
         $this->assertThrows(function () {
-            $form_config = new ManagerFactory();
-            /** @var FormManager|BaseManager $manager */
+            $form_config = new ConnectionFactory();
+            /** @var ConnectorContract|BaseConnection $manager */
             $manager = $form_config->get('test_form')->first();
             $manager->mappedData(['crm_1' => fake()->name]);
         }, MissingFormFieldTransformerException::class);
@@ -40,8 +40,8 @@ class FormConfigMappingTest extends TestCase
 
     public function test_maps_computed_values_correctly_for_rest_api_manager()
     {
-        Config::set('statamic-forms.forms.test_form', [
-            'rest-api-simple::test-1' => [
+        Config::set('statamic-formidable-forms.forms.test_form', [
+            'http::test-1' => [
                 '::enabled'   => true,
                 '::fake'      => false,
                 '::fake-type' => 'success',
@@ -58,8 +58,8 @@ class FormConfigMappingTest extends TestCase
             ]
         ]);
 
-        $form_config = new ManagerFactory();
-        /** @var FormManager|BaseManager $manager */
+        $form_config = new ConnectionFactory();
+        /** @var ConnectorContract|BaseConnection $manager */
         $manager     = $form_config->get('test_form')->first();
         $submission  = [
             'email' => fake()->email
@@ -73,8 +73,8 @@ class FormConfigMappingTest extends TestCase
 
     public function test_maps_normal_value_correctly_for_rest_api_manager()
     {
-        Config::set('statamic-forms.forms.test_form', [
-            'rest-api-simple::test-1' => [
+        Config::set('statamic-formidable-forms.forms.test_form', [
+            'http::test-1' => [
                 '::enabled'   => true,
                 '::fake'      => false,
                 '::fake-type' => 'success',
@@ -91,8 +91,8 @@ class FormConfigMappingTest extends TestCase
             ]
         ]);
 
-        $form_config = new ManagerFactory();
-        /** @var FormManager|BaseManager $manager */
+        $form_config = new ConnectionFactory();
+        /** @var ConnectorContract|BaseConnection $manager */
         $manager     = $form_config->get('test_form')->first();
         $submission  = [
             'email' => fake()->email
@@ -106,8 +106,8 @@ class FormConfigMappingTest extends TestCase
 
     public function test_fails_maps_values_for_rest_api_manager()
     {
-        Config::set('statamic-forms.forms.test_form', [
-            'rest-api-simple::test-1' => [
+        Config::set('statamic-formidable-forms.forms.test_form', [
+            'http::test-1' => [
                 '::enabled'   => true,
                 '::fake'      => false,
                 '::fake-type' => 'success',
@@ -122,8 +122,8 @@ class FormConfigMappingTest extends TestCase
         ]);
 
         $this->assertThrows(function () {
-            $form_config = new ManagerFactory();
-            /** @var FormManager|BaseManager $manager */
+            $form_config = new ConnectionFactory();
+            /** @var ConnectorContract|BaseConnection $manager */
             $manager = $form_config->get('test_form')->first();
             $manager->mappedData(['crm_1' => fake()->name]);
         }, MissingFormFieldTransformerException::class);

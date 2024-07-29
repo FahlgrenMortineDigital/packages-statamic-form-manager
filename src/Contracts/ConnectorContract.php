@@ -4,7 +4,7 @@ namespace Fahlgrendigital\StatamicFormManager\Contracts;
 
 use Statamic\Forms\Submission;
 
-interface FormManager
+interface ConnectorContract
 {
     public function send(Submission $submission): bool;
 

@@ -8,12 +8,7 @@ class FormConfig
     {
     }
 
-    public function localConfig(): array
-    {
-        return $this->config;
-    }
-
-    public function globalConfig(): array
+    public function key(): string
     {
         $global_key = $this->type;
 
@@ -21,7 +16,17 @@ class FormConfig
             $global_key .= "::$this->subtype";
         }
 
-        return config(sprintf("statamic-forms.defaults.%s", $global_key), []);
+        return $global_key;
+    }
+
+    public function localConfig(): array
+    {
+        return $this->config;
+    }
+
+    public function globalConfig(): array
+    {
+        return config(sprintf("statamic-formidable-forms.defaults.%s", $this->key()), []);
     }
 
     public function localValue(string $key, mixed $default = null)

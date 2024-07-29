@@ -18,8 +18,6 @@ class MarkSubmissionExported implements ShouldQueue
 
     public function handle(): void
     {
-        $this->submission->set('exported_at', now());
-
         SubmissionSupport::silentSave($this->submission);
     }
 }

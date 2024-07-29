@@ -35,7 +35,7 @@ protected $listen = [
 `statamic-form-manager`
 
 Statamic form manager allows you to configure managers to handle the shuttling of form data to specified destinations.
-To create your own managers you can edit the `statamic-form-manager.managers` array. Give your manager a unique snake-case name
+To create your own managers you can edit the `statamic-form-manager.connectors` array. Give your manager a unique snake-case name
 and add it to the list of existing managers.
 
 Behind the scenes, form manager process form data with queues. You may specify the queue connection and queue under the 

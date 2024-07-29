@@ -1,27 +1,30 @@
 <?php
 
-namespace Fahlgrendigital\StatamicFormManager\Managers;
+namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Exception;
-use Fahlgrendigital\StatamicFormManager\Contracts\FormManager;
+use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
+use Fahlgrendigital\StatamicFormManager\Contracts\HttpConnector;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
 use Statamic\Forms\Submission;
 
-class CrmFormManager extends BaseManager implements FormManager
+class HttpConnection extends BaseConnection implements ConnectorContract, HttpConnector
 {
-    # CRM POST url
     public string $url = '';
+    public ?array $headers = [];
 
     /**
      * @throws Exception
      */
-    public static function init(string $key, array $config, ?string $subtype = null): FormManager
+    public static function init(string $key, array $config, ?string $subtype = null): ConnectorContract
     {
         $form_config = new FormConfig($key, $config, $subtype);
         $url         = $form_config->value('::url');
         $maps        = $form_config->mergeValue('maps');
-        $default     = $form_config->value('default');
+        $computed    = $form_config->mergeValue('computed');
+        $default     = $form_config->mergeValue('default');
+        $headers     = $form_config->value('::headers');
 
         static::validateData(['url' => $url]);
 
@@ -29,15 +32,16 @@ class CrmFormManager extends BaseManager implements FormManager
         $instance->maps     = $maps;
         $instance->defaults = $default;
         $instance->url      = $url;
+        $instance->headers  = $headers;
+        $instance->computed = $computed;
+        $instance->handle   = $form_config->key();
 
-        if($form_config->localValue('::gate')){
+        if ($form_config->localValue('::gate')) {
             $instance->registerFormGate($form_config->localValue('::gate'));
         }
 
         return $instance;
     }
-
-    # Prep submission data for CRM
 
     /**
      * @throws Exception
@@ -56,6 +60,6 @@ class CrmFormManager extends BaseManager implements FormManager
 
     protected function makeRequest(array $data): bool
     {
-        return Http::asForm()->post($this->url, $data)->successful();
+        return Http::withHeaders($this->headers)->asJson()->post($this->url, $data)->successful();
     }
 }

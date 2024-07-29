@@ -30,9 +30,9 @@ return [
      | ============================================================================
     */
     'defaults' => [
-        'crm::sales-force' => [],
-        'crm::pardot'      => [],
-        'transactional'    => [],
+        'http::sales-force' => [],
+        'http::pardot'      => [],
+        'mailable'          => [],
     ],
 
     /*
@@ -53,7 +53,7 @@ return [
      | * Example *
      |
      | 'schedule_consultation' => [
-     |      'crm::sales-force' => [
+     |      'http::sales-force' => [
      |          '::enabled'   => true,
      |          '::fake'      => env('FORMS_DEBUG', true),
      |          '::fake-type' => 'success',
