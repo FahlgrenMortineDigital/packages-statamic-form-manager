@@ -62,14 +62,29 @@ class Export extends Model
      * ================================
      */
 
-    public function failed(): void
+    public function markFailed(): void
     {
         $this->update(['failed_at' => now(), 'exported_at' => null]);
     }
 
-    public function succeeded(): void
+    public function markSucceeded(): void
     {
         $this->update(['exported_at' => now(), 'failed_at' => null]);
+    }
+
+    public function completed(): bool
+    {
+        return $this->exported_at !== null && $this->failed_at === null;
+    }
+
+    public function pending(): bool
+    {
+        return $this->exported_at === null && $this->failed_at === null;
+    }
+
+    public function failed(): bool
+    {
+        return $this->failed_at !== null;
     }
 
     public static function newFormSubmission(Submission $submission, string $destination): Export

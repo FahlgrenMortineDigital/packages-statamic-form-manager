@@ -26,9 +26,9 @@ class SendFormSubmission implements ShouldQueue
 
         if (!$success) {
             $this->fail(new \Exception("Failed submission"));
-            $export->failed();
+            $export->markFailed();
         } else {
-            $export->succeeded();
+            $export->markSucceeded();
         }
 
         //todo - add option for encrypting submissions
