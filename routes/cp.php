@@ -8,6 +8,8 @@ Route::prefix('formidable')->group(function () {
     Route::get('dashboard', Controllers\DashboardController::class)->name('formidable.index');
 
     Route::prefix('api')->group(function () {
-        Route::resource('exports', API\ExportsController::class)->only(['index', 'show']);
+        Route::resource('exports', API\ExportsController::class)->only(['index']);
     });
+
+    Route::resource('submissions', Controllers\SubmissionsController::class)->only(['show']);
 });

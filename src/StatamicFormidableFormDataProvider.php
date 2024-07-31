@@ -5,6 +5,8 @@ namespace Fahlgrendigital\StatamicFormManager;
 use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
 use Fahlgrendigital\StatamicFormManager\Console\Commands\CleanOldExports;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
+use Fahlgrendigital\StatamicFormManager\Http\Filters\ByFormHandle;
+use Fahlgrendigital\StatamicFormManager\Http\Filters\ExportCompleted;
 use Fahlgrendigital\StatamicFormManager\Listeners\FormSubmissionsManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
@@ -20,6 +22,14 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
 
     protected $routes = [
         'cp' => __DIR__.'/../routes/cp.php',
+    ];
+
+    protected $vite = [
+        'input' => [
+            'resources/js/addon.js',
+            'resources/css/addon.css',
+        ],
+        'publicDirectory' => 'resources/dist'
     ];
 
     protected $commands = [
@@ -41,6 +51,9 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
 
     public function bootAddon(): void
     {
+        ExportCompleted::register();
+        ByFormHandle::register();
+
         $this->bootDatabase()->bootAddonNav()->bootAddonViews();
 
         Event::listen(SubmissionSaved::class, FormSubmissionsManager::class);
