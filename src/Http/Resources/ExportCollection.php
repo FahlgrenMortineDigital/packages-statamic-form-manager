@@ -27,6 +27,7 @@ class ExportCollection extends ResourceCollection
             Column::make('submission_id')->label('Submission'),
             Column::make('exported_count')->label('Exported'),
             Column::make('failed_count')->label('Failed'),
+            Column::make('pending_count')->label('Pending'),
         ];
 
         $columns = new Columns($columns);

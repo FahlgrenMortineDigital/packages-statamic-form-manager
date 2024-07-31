@@ -39,17 +39,19 @@ class Export extends Model
                            ->groupBy('submission_id')
                            ->select('submission_id')
                            ->selectRaw('COUNT(exported_at) as exported_count')
+                           ->selectRaw('CAST(SUM(CASE WHEN exported_at IS NULL AND failed_at IS NULL THEN 1 ELSE 0 END) AS UNSIGNED) as pending_count')
                            ->selectRaw('COUNT(failed_at) as failed_count');
 
         $query->joinSub($sub_query, 'sub_query', function ($join) {
             $join->on('exports.submission_id', '=', 'sub_query.submission_id');
         })
-              ->groupBy('exports.form_handle', 'sub_query.submission_id', 'sub_query.exported_count', 'sub_query.failed_count')
+              ->groupBy('exports.form_handle', 'sub_query.submission_id', 'sub_query.exported_count', 'sub_query.failed_count', 'sub_query.pending_count')
               ->select(
                   'exports.form_handle',
                   'sub_query.submission_id',
                   'sub_query.exported_count',
                   'sub_query.failed_count',
+                  'sub_query.pending_count',
                   DB::raw('CASE WHEN sub_query.exported_count = 0 THEN 0 WHEN sub_query.failed_count > 0 THEN 0 ELSE 1 END as completed')
               );
     }

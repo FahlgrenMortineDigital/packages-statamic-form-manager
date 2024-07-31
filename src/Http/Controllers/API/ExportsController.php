@@ -16,6 +16,7 @@ class ExportsController
             $query->where('form_handle', 'like', "%{$search}%")->orWhere('submission_payload', 'like', "%{$search}%");
         })->forIndexPage();
 
+        // Statamic vue component utf8btoa encodes the filters, so we need to decode them
         $activeFilterBadges = $this->queryFilters($query, json_decode(base64_decode(request()->get('filters')), true));
 
         $sortField     = request('sort');
