@@ -57,20 +57,22 @@
                 </div>
 
                 <div class="flex justify-between items-center mt-2">
-                    <div>
-                        @if($export->submission_payload)
-                            <json-pretty-print
-                                    :data="{{ json_encode($export->submission_payload) }}"
-                                    class="text-gray dark:text-dark-150 text-sm my-2"></json-pretty-print>
-                        @endif
-                    </div>
+                    @if($export->submission_payload)
+                        <json-pretty-print
+                                :data="{{ json_encode($export->submission_payload) }}"
+                                class="text-gray dark:text-dark-150 text-sm my-2"></json-pretty-print>
+                    @endif
 
                     @if(!$export->completed())
-                        @if($export->failed())
-                            <button class="btn">Retry</button>
-                        @else
-                            <button class="btn">Run</button>
-                        @endif
+                        <form method="POST" action="{{route('statamic.cp.formidable.exports', $export)}}">
+                            @csrf
+
+                            @if($export->failed())
+                                <button class="btn" type="submit">Retry Export</button>
+                            @else
+                                <button class="btn" type="submit">Run Export</button>
+                            @endif
+                        </form>
                     @endif
                 </div>
             </div>

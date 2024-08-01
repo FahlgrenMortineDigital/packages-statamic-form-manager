@@ -38,7 +38,7 @@
         "Fahlgrendigital\\StatamicFormManager\\StatamicFormidableFormDataProvider"
       ],
       "aliases": {
-        "ManagerFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ConnectionFactoryFacade"
+        "ConnectionFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ConnectionFactoryFacade"
       }
     }
   },

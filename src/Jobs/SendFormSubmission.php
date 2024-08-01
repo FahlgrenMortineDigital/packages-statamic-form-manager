@@ -2,8 +2,8 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Jobs;
 
+use Fahlgrendigital\StatamicFormManager\Actions\SendSubmission;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
-use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -21,17 +21,11 @@ class SendFormSubmission implements ShouldQueue
 
     public function handle(): void
     {
-        $export  = Export::newFormSubmission($this->submission, $this->connector->getHandle());
-        $success = $this->connector->send($this->submission);
+        $success = SendSubmission::make($this->connector, $this->submission)
+                      ->handle();
 
-        if (!$success) {
-            $this->fail(new \Exception("Failed submission"));
-            $export->markFailed();
-        } else {
-            $export->markSucceeded();
+        if(!$success) {
+            $this->fail(new \Exception('Failed to send form submission: ' . $this->submission->id()));
         }
-
-        //todo - add option for encrypting submissions
-        $this->connector->logPayload($this->submission);
     }
 }

@@ -5,6 +5,7 @@ namespace Fahlgrendigital\StatamicFormManager\Data;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Statamic\Facades\FormSubmission;
 use Statamic\Forms\Submission;
 
 class Export extends Model
@@ -87,9 +88,14 @@ class Export extends Model
         return $this->failed_at !== null;
     }
 
-    public static function newFormSubmission(Submission $submission, string $destination): Export
+    public function submission(): ?Submission
     {
-        return static::create([
+        return FormSubmission::find($this->submission_id);
+    }
+
+    public static function firstOrNewFormSubmission(Submission $submission, string $destination): Export
+    {
+        return static::firstOrCreate([
             'submission_id' => $submission->id(),
             'form_handle'   => $submission->form->handle(),
             'destination'   => $destination,

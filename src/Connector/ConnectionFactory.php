@@ -4,7 +4,6 @@ namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
-use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
 use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -29,7 +28,7 @@ class ConnectionFactory
             $connector_key_parts = explode('::', $key, 2);
 
             /** @var BaseConnection|ConnectorContract $connector */
-            $connector           = static::initManager(
+            $connector = static::initManager(
                 $connector_key_parts[0],
                 $config,
                 $connector_key_parts[1] ?? null
@@ -39,12 +38,28 @@ class ConnectionFactory
                 $this->handleFake($connector, $config);
             }
 
-            if(Arr::get($config, '::debug')) {
+            if (Arr::get($config, '::debug')) {
                 $connector->debug($config['::debug']);
             }
 
             return $connector;
         })->flatten();
+    }
+
+    public function getByConnection(string $form_handle, string $connection): BaseConnection
+    {
+        $connector_key_parts  = explode('::', $connection, 2);
+        $config = config('statamic-formidable-forms.forms');
+        $form_config = $config[$form_handle][$connection] ?? [];
+
+        /** @var BaseConnection|ConnectorContract $connector */
+        $connector = static::initManager(
+            $connector_key_parts[0],
+            $form_config,
+            $connector_key_parts[1] ?? null
+        );
+
+        return $connector;
     }
 
     /**
