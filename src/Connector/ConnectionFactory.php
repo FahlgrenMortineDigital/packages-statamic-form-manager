@@ -3,15 +3,13 @@
 namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Exception;
-use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Config;
 
 class ConnectionFactory
 {
-    public function get(string $handle): Collection
+    public function getConnectors(string $handle): Collection
     {
         $config = config('statamic-formidable-forms.forms');
 
@@ -22,42 +20,40 @@ class ConnectionFactory
         return collect($config[$handle])->filter(function ($config) {
             // only fetch enabled form managers
             return $config['::enabled'] ?? false;
-        })->map(function ($config, $key) {
-            // [0] : Manager key
-            // [1] : Manager subtype (sales-force, etc)
-            $connector_key_parts = explode('::', $key, 2);
-
-            /** @var BaseConnection|ConnectorContract $connector */
-            $connector = static::initManager(
-                $connector_key_parts[0],
-                $config,
-                $connector_key_parts[1] ?? null
-            );
-
-            if (Arr::get($config, '::fake')) {
-                $this->handleFake($connector, $config);
-            }
-
-            if (Arr::get($config, '::debug')) {
-                $connector->debug($config['::debug']);
-            }
-
-            return $connector;
+        })->map(function ($config, $key) use($handle) {
+            return $this->getByConnection($handle, $key);
         })->flatten();
     }
 
+    /**
+     * @throws Exception
+     */
     public function getByConnection(string $form_handle, string $connection): BaseConnection
     {
-        $connector_key_parts  = explode('::', $connection, 2);
-        $config = config('statamic-formidable-forms.forms');
-        $form_config = $config[$form_handle][$connection] ?? [];
+        $connector_key_parts = explode('::', $connection, 2);
+        $config              = config('statamic-formidable-forms.forms');
 
-        /** @var BaseConnection|ConnectorContract $connector */
+        if (!Arr::has($config, $form_handle)) {
+            throw new \Exception(sprintf("%s: Form not found [%s]", StatamicFormidableFormDataProvider::PACKAGE_NAME, $form_handle));
+        }
+
+        if (!Arr::has($config[$form_handle], $connection)) {
+            throw new \Exception(sprintf("%s: Form connection not found [%s]", StatamicFormidableFormDataProvider::PACKAGE_NAME, $connection));
+        }
+
         $connector = static::initManager(
+            $form_handle,
             $connector_key_parts[0],
-            $form_config,
             $connector_key_parts[1] ?? null
         );
+
+        if (Arr::get($config, '::fake')) {
+            $this->handleFake($connector, $config);
+        }
+
+        if (Arr::get($config, '::debug')) {
+            $connector->debug($config['::debug']);
+        }
 
         return $connector;
     }
@@ -65,27 +61,23 @@ class ConnectionFactory
     /**
      * @throws Exception
      */
-    protected function initManager(string $key, array $config, ?string $subtype = null): ConnectorContract
+    protected function initManager(string $form_handle, string $key, ?string $subtype = null): BaseConnection
     {
-        if (!array_key_exists($key, Config::get('statamic-formidable.connectors'))) {
-            throw new Exception(sprintf("%s: Form manager map not found [$key]", StatamicFormidableFormDataProvider::PACKAGE_NAME));
-        }
+        $class = config(sprintf("statamic-formidable.connectors.%s", $key));
 
-        $class = Config::get(sprintf("statamic-formidable.connectors.%s", $key));
-
-        return $class::init($key, $config, $subtype);
+        return $class::init($form_handle, $key, $subtype);
     }
 
-    protected function handleFake(BaseConnection $manager, array $config): void
+    protected function handleFake(BaseConnection $connection, array $config): void
     {
-        $manager->fakeIt();
+        $connection->fakeIt();
 
         $type = Arr::get($config, '::fake-type', 'success');
 
         if ($type == 'success') {
-            $manager->fakeSuccess();
+            $connection->fakeSuccess();
         } else {
-            $manager->fakeFail();
+            $connection->fakeFail();
         }
     }
 }

@@ -5,7 +5,6 @@ namespace Fahlgrendigital\StatamicFormManager\Connector;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Contracts\MailableConnector as MailableConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
-use Illuminate\Mail\Mailable;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
 use Statamic\Forms\Submission;
@@ -18,9 +17,9 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
     /**
      * @throws \Exception
      */
-    public static function init(string $key, array $config, ?string $subtype = null): ConnectorContract
+    public static function init(string $form_handle, string $key, ?string $subtype = null): ConnectorContract
     {
-        $form_config = new FormConfig($key, $config, $subtype);
+        $form_config = new FormConfig($form_handle, $key, $subtype);
         $mailto      = $form_config->value('mailto');
         $mailable    = $form_config->value('mailable');
 

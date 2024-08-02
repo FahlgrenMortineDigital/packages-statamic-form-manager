@@ -4,8 +4,11 @@ namespace Fahlgrendigital\StatamicFormManager\Support;
 
 class FormConfig
 {
-    public function __construct(protected string $type, protected array $config, protected ?string $subtype)
+    protected array $config;
+
+    public function __construct(protected string $form_handle, protected string $type, protected ?string $subtype)
     {
+        $this->config = config(sprintf("statamic-formidable-forms.forms.%s.%s", $form_handle, $this->key()), []);
     }
 
     public function key(): string

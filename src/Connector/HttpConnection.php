@@ -23,9 +23,9 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
     /**
      * @throws Exception
      */
-    public static function init(string $key, array $config, ?string $subtype = null): ConnectorContract
+    public static function init(string $form_handle, string $key, ?string $subtype = null): ConnectorContract
     {
-        $form_config = new FormConfig($key, $config, $subtype);
+        $form_config = new FormConfig($form_handle, $key, $subtype);
         $url         = $form_config->value('::url');
         $headers     = $form_config->value('::headers');
         $maps        = $form_config->mergeValue('maps');
@@ -71,7 +71,7 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
             return Http::withHeaders($this->headers)->post($this->url, $data)->successful();
         }
 
-        return Http::withHeaders($this->headers)->asJson()->get($this->url, $data)->successful();
+        return Http::withHeaders($this->headers ?? [])->asJson()->get($this->url, $data)->successful();
     }
 
     public function logPayload(Submission $submission): bool
