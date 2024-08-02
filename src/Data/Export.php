@@ -53,7 +53,8 @@ class Export extends Model
                   'sub_query.exported_count',
                   'sub_query.failed_count',
                   'sub_query.pending_count',
-                  DB::raw('CASE WHEN sub_query.exported_count = 0 THEN 0 WHEN sub_query.failed_count > 0 THEN 0 ELSE 1 END as completed')
+                  DB::raw('MIN(exports.created_at) as earliest_created_at'),
+                  DB::raw('CASE WHEN sub_query.exported_count = 0 THEN 0 WHEN sub_query.failed_count > 0 THEN 0 ELSE 1 END as completed'),
               );
     }
 
@@ -95,9 +96,10 @@ class Export extends Model
 
     public static function firstOrNewFormSubmission(Submission $submission, string $destination): Export
     {
+        // forms can have many submissions and many destinations, but a submission will only have unique destinations
         return static::firstOrCreate([
-            'submission_id' => $submission->id(),
             'form_handle'   => $submission->form->handle(),
+            'submission_id' => $submission->id(),
             'destination'   => $destination,
         ]);
     }

@@ -28,6 +28,7 @@ class ExportCollection extends ResourceCollection
             Column::make('exported_count')->label('Exported'),
             Column::make('failed_count')->label('Failed'),
             Column::make('pending_count')->label('Pending'),
+            Column::make('earliest_created_at')->label('Date')->sortable(true),
         ];
 
         $columns = new Columns($columns);
