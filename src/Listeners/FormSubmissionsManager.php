@@ -15,9 +15,9 @@ class FormSubmissionsManager
     {
         /** @var Form $form */
         $form     = $event->submission->form;
-        $managers = (new ConnectionFactory())->get($form->handle());
+        $connectors = (new ConnectionFactory())->getConnectors($form->handle());
 
-        $managers->each(function (ConnectorContract $manager) use ($event) {
+        $connectors->each(function (ConnectorContract $manager) use ($event) {
             SendFormSubmission::dispatch($manager, $event->submission)
                               ->onConnection(Config::get('statamic-form-manager.queue.connection'))
                               ->onQueue(Config::get('statamic-form-manager.queue.queue'));
