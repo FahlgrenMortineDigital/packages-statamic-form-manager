@@ -41,7 +41,7 @@ class FormConfigTest extends TestCase
 
         $form_config = new ConnectionFactory();
 
-        $this->assertCount(1, $form_config->get('test_form'));
+        $this->assertCount(1, $form_config->getConnectors('test_form'));
     }
 
     public function test_missing_enabled_skips_form_config()
@@ -62,7 +62,7 @@ class FormConfigTest extends TestCase
 
         $form_config = new ConnectionFactory();
 
-        $this->assertCount(0, $form_config->get('test_form'));
+        $this->assertCount(0, $form_config->getConnectors('test_form'));
     }
 
     public function test_catch_missing_url_exception_for_crm()
@@ -84,7 +84,7 @@ class FormConfigTest extends TestCase
         $form_config = new ConnectionFactory();
 
         $this->assertThrows(function () use ($form_config) {
-            $form_config->get('test_form');
+            $form_config->getConnectors('test_form');
         }, Exception::class);
     }
 
@@ -112,7 +112,7 @@ class FormConfigTest extends TestCase
         ]);
 
         $form_config = new ConnectionFactory();
-        $managers    = $form_config->get('test_form');
+        $managers    = $form_config->getConnectors('test_form');
         $crm_manager = $managers->first();
 
         $this->assertEquals(
@@ -141,7 +141,7 @@ class FormConfigTest extends TestCase
         ]);
 
         $form_config = new ConnectionFactory();
-        $managers    = $form_config->get('test_form');
+        $managers    = $form_config->getConnectors('test_form');
         $crm_manager = $managers->first();
 
         $this->assertEquals(
@@ -165,14 +165,14 @@ class FormConfigTest extends TestCase
         $form_config = new ConnectionFactory();
 
         $this->assertThrows(function () use ($form_config) {
-            $form_config->get('test_form');
+            $form_config->getConnectors('test_form');
         }, Exception::class);
     }
 
     public function test_catch_null_mailable_exception_for_transactional()
     {
         Config::set('statamic-formidable-forms.forms.test_form', [
-            'transactional' => [
+            'mailable' => [
                 '::enabled' => true,
                 '::fake'    => false,
                 'mailable'  => null,
@@ -185,14 +185,14 @@ class FormConfigTest extends TestCase
         $form_config = new ConnectionFactory();
 
         $this->assertThrows(function () use ($form_config) {
-            $form_config->get('test_form');
+            $form_config->getConnectors('test_form');
         }, Exception::class);
     }
 
     public function test_mailable_is_a_valid_class()
     {
         Config::set('statamic-formidable-forms.forms.test_form', [
-            'transactional' => [
+            'mailable' => [
                 '::enabled' => true,
                 '::fake'    => false,
                 'mailable'  => 'RandomClass\\Path\\Goes\\Here',
@@ -205,14 +205,14 @@ class FormConfigTest extends TestCase
         $form_config = new ConnectionFactory();
 
         $this->assertThrows(function () use ($form_config) {
-            $form_config->get('test_form');
+            $form_config->getConnectors('test_form');
         }, Exception::class);
     }
 
     public function test_mailto_is_not_empty()
     {
         Config::set('statamic-formidable-forms.forms.test_form', [
-            'transactional' => [
+            'mailable' => [
                 '::enabled' => true,
                 '::fake'    => false,
                 'mailable'  => 'RandomClass\\Path\\Goes\\Here',
@@ -223,7 +223,7 @@ class FormConfigTest extends TestCase
         $form_config = new ConnectionFactory();
 
         $this->assertThrows(function () use ($form_config) {
-            $form_config->get('test_form');
+            $form_config->getConnectors('test_form');
         }, Exception::class);
     }
 
@@ -246,7 +246,7 @@ class FormConfigTest extends TestCase
 
         $form_config = new ConnectionFactory();
         /** @var MailableConnection $manager */
-        $manager = $form_config->get('test_form')->first();
+        $manager = $form_config->getConnectors('test_form')->first();
 
         $this->assertEquals(
             Config::get('statamic-formidable-forms.forms.test_form.mailable.mailto'),

@@ -33,7 +33,7 @@ class FormConfigMappingTest extends TestCase
         $this->assertThrows(function () {
             $form_config = new ConnectionFactory();
             /** @var ConnectorContract|BaseConnection $manager */
-            $manager = $form_config->get('test_form')->first();
+            $manager = $form_config->getConnectors('test_form')->first();
             $manager->mappedData(['crm_1' => fake()->name]);
         }, MissingFormFieldTransformerException::class);
     }
@@ -60,7 +60,7 @@ class FormConfigMappingTest extends TestCase
 
         $form_config = new ConnectionFactory();
         /** @var ConnectorContract|BaseConnection $manager */
-        $manager     = $form_config->get('test_form')->first();
+        $manager     = $form_config->getConnectors('test_form')->first();
         $submission  = [
             'email' => fake()->email
         ];
@@ -93,7 +93,7 @@ class FormConfigMappingTest extends TestCase
 
         $form_config = new ConnectionFactory();
         /** @var ConnectorContract|BaseConnection $manager */
-        $manager     = $form_config->get('test_form')->first();
+        $manager     = $form_config->getConnectors('test_form')->first();
         $submission  = [
             'email' => fake()->email
         ];
@@ -124,7 +124,7 @@ class FormConfigMappingTest extends TestCase
         $this->assertThrows(function () {
             $form_config = new ConnectionFactory();
             /** @var ConnectorContract|BaseConnection $manager */
-            $manager = $form_config->get('test_form')->first();
+            $manager = $form_config->getConnectors('test_form')->first();
             $manager->mappedData(['crm_1' => fake()->name]);
         }, MissingFormFieldTransformerException::class);
     }
