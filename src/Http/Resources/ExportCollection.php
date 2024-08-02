@@ -25,10 +25,10 @@ class ExportCollection extends ResourceCollection
         $columns = [
             Column::make('form_handle')->label('Form')->sortable(true),
             Column::make('submission_id')->label('Submission'),
-            Column::make('exported_count')->label('Exported'),
-            Column::make('failed_count')->label('Failed'),
-            Column::make('pending_count')->label('Pending'),
-            Column::make('earliest_created_at')->label('Date')->sortable(true),
+            Column::make('exported_count')->label('Exported'), //computed column
+            Column::make('failed_count')->label('Failed'), //computed column
+            Column::make('pending_count')->label('Pending'), //computed column
+            Column::make('earliest_created_at')->label('Date')->sortable(true), //computed column
         ];
 
         $columns = new Columns($columns);
