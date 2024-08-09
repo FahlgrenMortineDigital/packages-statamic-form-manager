@@ -3,6 +3,7 @@
 
 # Vendor
 vendor
+node_modules
 
 # Composer
 composer.lock
