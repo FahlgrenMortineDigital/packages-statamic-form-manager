@@ -58,7 +58,7 @@ class TransactionalFormManager extends BaseManager implements FormManager
     protected function makeRequest(array $data): bool
     {
         foreach ($this->recipients as $recipient) {
-            $mailable = (new $this->mailable($data))
+            $mailable = (new $this->mailable(collect($data)))
                 ->onConnection(config('statamic-form-manager.queue.connection'))
                 ->onQueue(config('statamic-form-manager.queue.queue'));
 
