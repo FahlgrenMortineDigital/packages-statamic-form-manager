@@ -21,7 +21,7 @@ class CrmFormManager extends BaseManager implements FormManager
         $form_config = new FormConfig($key, $config, $subtype);
         $url         = $form_config->value('::url');
         $maps        = $form_config->mergeValue('maps');
-        $default     = $form_config->value('default', []);
+        $default     = $form_config->mergeValue('default');
 
         static::validateData(['url' => $url]);
 
