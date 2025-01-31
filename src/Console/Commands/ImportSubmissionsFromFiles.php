@@ -32,6 +32,10 @@ class ImportSubmissionsFromFiles extends Command
             $form->submissions()->each(function (Submission $submission) use(&$meta, $bar, $dry_run) {
                 $connectors = ConnectionFactoryFacade::getConnectors($submission->form->handle());
 
+                if(!isset($meta[$submission->form->handle()])) {
+                    $meta[$submission->form->handle()] = 0;
+                }
+
                 $connectors->each(function(BaseConnection $connector) use($submission, &$meta, $dry_run) {
                     $export = Export::firstOrNewFormSubmission($submission, $connector->getHandle());
 
@@ -43,10 +47,6 @@ class ImportSubmissionsFromFiles extends Command
                     // save the record if it is a new one
                     if(!$dry_run) {
                         $export->save();
-                    }
-
-                    if(!isset($meta[$submission->form->handle()])) {
-                        $meta[$submission->form->handle()] = 0;
                     }
 
                     $meta[$submission->form->handle()]++;
