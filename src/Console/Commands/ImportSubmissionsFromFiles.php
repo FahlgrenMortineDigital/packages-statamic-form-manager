@@ -60,7 +60,7 @@ class ImportSubmissionsFromFiles extends Command
             });
 
             $bar->finish();
-            $this->output->newLine();
+            $this->output->newLine(2);
         });
 
         $table_data = [];
