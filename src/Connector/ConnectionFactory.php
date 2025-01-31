@@ -4,6 +4,7 @@ namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
+use Fahlgrendigital\StatamicFormManager\Enums\FakeResponse;
 use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -77,9 +78,9 @@ class ConnectionFactory
     {
         $connection->fakeIt();
 
-        $type = Arr::get($config, '::fake-type', 'success');
+        $type = Arr::get($config, '::fake-type', FakeResponse::SUCCESS->value);
 
-        if ($type == 'success') {
+        if ($type === FakeResponse::SUCCESS->value) {
             $connection->fakeSuccess();
         } else {
             $connection->fakeFail();

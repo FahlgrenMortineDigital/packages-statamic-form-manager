@@ -3,6 +3,7 @@
 namespace Fahlgrendigital\StatamicFormManager\Connector\Traits;
 
 use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
+use Fahlgrendigital\StatamicFormManager\Enums\FakeResponse;
 
 trait CanFake
 {
@@ -28,14 +29,14 @@ trait CanFake
 
     public function fakeSuccess(): BaseConnection
     {
-        $this->fake_mode = 'success';
+        $this->fake_mode = FakeResponse::SUCCESS->value;
 
         return $this;
     }
 
     public function fakeFail(): BaseConnection
     {
-        $this->fake_mode = 'fail';
+        $this->fake_mode = FakeResponse::FAILURE->value;
 
         return $this;
     }
@@ -46,11 +47,11 @@ trait CanFake
 
     private function isSuccess(): bool
     {
-        return $this->fake_mode == 'success';
+        return $this->fake_mode == FakeResponse::SUCCESS->value;
     }
 
     private function isFail(): bool
     {
-        return $this->fake_mode == 'fail';
+        return $this->fake_mode == FakeResponse::FAILURE->value;
     }
 }
