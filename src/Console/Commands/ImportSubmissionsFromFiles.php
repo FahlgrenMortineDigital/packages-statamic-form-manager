@@ -20,7 +20,13 @@ class ImportSubmissionsFromFiles extends Command
         $meta = [];
 
         $forms->each(function(\Statamic\Forms\Form $form) use(&$meta) {
-            $form->submissions()->each(function (Submission $submission) use(&$meta) {
+            $this->info("Processing form submissions: {$form->handle()}");
+
+            $bar = $this->output->createProgressBar($form->submissions()->count());
+
+            $bar->start();
+
+            $form->submissions()->each(function (Submission $submission) use(&$meta, $bar) {
                 $connectors = ConnectionFactoryFacade::getConnectors($submission->form->handle());
 
                 $connectors->each(function($connector) use($submission, &$meta) {
@@ -43,8 +49,13 @@ class ImportSubmissionsFromFiles extends Command
                     return true;
                 });
 
+                $bar->advance();
+
                 return true;
             });
+
+            $bar->finish();
+            $this->output->newLine();
         });
 
         $table_data = [];
