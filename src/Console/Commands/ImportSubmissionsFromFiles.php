@@ -29,12 +29,12 @@ class ImportSubmissionsFromFiles extends Command
 
             $bar->start();
 
+            if(!isset($meta[$form->handle()])) {
+                $meta[$form->handle()] = 0;
+            }
+
             $form->submissions()->each(function (Submission $submission) use(&$meta, $bar, $dry_run) {
                 $connectors = ConnectionFactoryFacade::getConnectors($submission->form->handle());
-
-                if(!isset($meta[$submission->form->handle()])) {
-                    $meta[$submission->form->handle()] = 0;
-                }
 
                 $connectors->each(function(BaseConnection $connector) use($submission, &$meta, $dry_run) {
                     $export = Export::firstOrNewFormSubmission($submission, $connector->getHandle());
