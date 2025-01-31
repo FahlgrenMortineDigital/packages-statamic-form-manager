@@ -30,6 +30,7 @@ class ImportSubmissionsFromFiles extends Command
             $bar->start();
 
             if(!isset($meta[$form->handle()])) {
+                $this->info("Set form handle to 0: {$form->handle()}");
                 $meta[$form->handle()] = 0;
             }
 
