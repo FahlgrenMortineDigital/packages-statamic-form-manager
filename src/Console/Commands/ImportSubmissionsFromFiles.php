@@ -30,7 +30,6 @@ class ImportSubmissionsFromFiles extends Command
             $bar->start();
 
             if(!isset($meta[$form->handle()])) {
-                $this->info("Set form handle to 0: {$form->handle()}");
                 $meta[$form->handle()] = 0;
             }
 
@@ -40,7 +39,7 @@ class ImportSubmissionsFromFiles extends Command
                 $connectors->each(function(BaseConnection $connector) use($submission, &$meta, $dry_run) {
                     $export = Export::firstOrNewFormSubmission($submission, $connector->getHandle());
 
-                    // if pulled from the DB then move on
+                    // if pulled from the DB then skip and go to next
                     if(!$export->wasRecentlyCreated) {
                         return true;
                     }
