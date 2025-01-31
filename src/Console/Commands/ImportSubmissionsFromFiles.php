@@ -10,7 +10,7 @@ use Statamic\Forms\Submission;
 
 class ImportSubmissionsFromFiles extends Command
 {
-    protected $signature = 'formidable:import-submissions {-D|dry-run : Perform a dry run}';
+    protected $signature = 'formidable:import-submissions {--D|dry-run : Perform a dry run}';
 
     protected $description = 'Import submissions from files when upgrading to v2.';
 
