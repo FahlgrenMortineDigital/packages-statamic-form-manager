@@ -10,26 +10,27 @@ use Statamic\Forms\Submission;
 
 class ImportSubmissionsFromFiles extends Command
 {
-    protected $signature = 'formidable:import-submissions';
+    protected $signature = 'formidable:import-submissions {-D|dry-run : Perform a dry run}';
 
     protected $description = 'Import submissions from files when upgrading to v2.';
 
     public function handle(): int
     {
+        $dry_run = $this->option('dry-run');
         $forms = Form::all();
         $meta = [];
 
-        $forms->each(function(\Statamic\Forms\Form $form) use(&$meta) {
+        $forms->each(function(\Statamic\Forms\Form $form) use(&$meta, $dry_run) {
             $this->info("Processing form submissions: {$form->handle()}");
 
             $bar = $this->output->createProgressBar($form->submissions()->count());
 
             $bar->start();
 
-            $form->submissions()->each(function (Submission $submission) use(&$meta, $bar) {
+            $form->submissions()->each(function (Submission $submission) use(&$meta, $bar, $dry_run) {
                 $connectors = ConnectionFactoryFacade::getConnectors($submission->form->handle());
 
-                $connectors->each(function($connector) use($submission, &$meta) {
+                $connectors->each(function($connector) use($submission, &$meta, $dry_run) {
                     $export = Export::firstOrNewFormSubmission($submission, $connector);
 
                     // if pulled from the DB then move on
@@ -38,7 +39,9 @@ class ImportSubmissionsFromFiles extends Command
                     }
 
                     // save the record if it is a new one
-                    $export->save();
+                    if(!$dry_run) {
+                        $export->save();
+                    }
 
                     if(!isset($meta[$submission->form->handle()])) {
                         $meta[$submission->form->handle()] = 0;
