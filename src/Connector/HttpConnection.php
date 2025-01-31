@@ -82,7 +82,7 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
     public function logPayload(Submission $submission): bool
     {
         $data   = $this->prepData($submission);
-        $export = Export::forSubmission($submission)->where('destination', $this->getHandle())->first();
+        $export = Export::forSubmission($submission)->forConnection($this)->first();
 
         if(!$export) {
             return false;

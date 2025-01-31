@@ -48,7 +48,7 @@ class ImportSubmissionsFromFiles extends Command
                         if($submission->get('exported_at')) {
                             $export->exported_at = $submission->get('exported_at');
                         }
-                        
+
                         $export->save();
                     }
 
