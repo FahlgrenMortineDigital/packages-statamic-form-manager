@@ -2,6 +2,8 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Console\Commands;
 
+use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
+use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Facades\ConnectionFactoryFacade;
 use Illuminate\Console\Command;
@@ -30,8 +32,8 @@ class ImportSubmissionsFromFiles extends Command
             $form->submissions()->each(function (Submission $submission) use(&$meta, $bar, $dry_run) {
                 $connectors = ConnectionFactoryFacade::getConnectors($submission->form->handle());
 
-                $connectors->each(function($connector) use($submission, &$meta, $dry_run) {
-                    $export = Export::firstOrNewFormSubmission($submission, $connector);
+                $connectors->each(function(BaseConnection $connector) use($submission, &$meta, $dry_run) {
+                    $export = Export::firstOrNewFormSubmission($submission, $connector->getHandle());
 
                     // if pulled from the DB then move on
                     if(!$export->wasRecentlyCreated) {
