@@ -1,12 +1,12 @@
 {
-  "name": "fahlgrendigital/packages-statamic-form-manager",
+  "name": "fahlgrendigital/packages-statamic-formidable-form-data",
   "authors": [
     {
       "name": "Andrew Clinton",
       "email": "andrew.clinton@fahlgren.com"
     }
   ],
-  "description": "Statamic Form Manager",
+  "description": "Statamic form submission management. Send submission data to 3rd party vendors like CRMs and custom REST endpoints.",
   "keywords": [
     "statamic",
     "cms",
@@ -15,12 +15,12 @@
   ],
   "require": {
     "php": "^8.1",
-    "illuminate/support": "^10.0 || ^11.0",
-    "statamic/cms": "^4.0 || ^5.0"
+    "illuminate/support": "^11.0",
+    "statamic/cms": "^5.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.5",
-    "orchestra/testbench": "^8.0"
+    "phpunit/phpunit": "^11.0",
+    "orchestra/testbench": "^9.0"
   },
   "autoload": {
     "psr-4": {
@@ -29,12 +29,16 @@
     }
   },
   "extra": {
+    "statamic": {
+      "name": "Formidable",
+      "description": "Statamic form submission management. Send submission data to 3rd party vendors like CRMs and custom REST endpoints."
+    },
     "laravel": {
       "providers": [
-        "Fahlgrendigital\\StatamicFormManager\\StatamicFormManagerProvider"
+        "Fahlgrendigital\\StatamicFormManager\\StatamicFormidableFormDataProvider"
       ],
       "aliases": {
-        "ManagerFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ManagerFactoryFacade"
+        "ConnectionFactory": "Fahlgrendigital\\StatamicFormManager\\Facades\\ConnectionFactoryFacade"
       }
     }
   },

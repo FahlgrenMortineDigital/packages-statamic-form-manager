@@ -4,8 +4,22 @@ namespace Fahlgrendigital\StatamicFormManager\Support;
 
 class FormConfig
 {
-    public function __construct(protected string $type, protected array $config, protected ?string $subtype)
+    protected array $config;
+
+    public function __construct(protected string $form_handle, protected string $type, protected ?string $subtype)
     {
+        $this->config = config(sprintf("statamic-formidable-forms.forms.%s.%s", $form_handle, $this->key()), []);
+    }
+
+    public function key(): string
+    {
+        $global_key = $this->type;
+
+        if (!empty($this->subtype)) {
+            $global_key .= "::$this->subtype";
+        }
+
+        return $global_key;
     }
 
     public function localConfig(): array
@@ -15,13 +29,7 @@ class FormConfig
 
     public function globalConfig(): array
     {
-        $global_key = $this->type;
-
-        if (!empty($this->subtype)) {
-            $global_key .= "::$this->subtype";
-        }
-
-        return config(sprintf("statamic-forms.defaults.%s", $global_key), []);
+        return config(sprintf("statamic-formidable-forms.defaults.%s", $this->key()), []);
     }
 
     public function localValue(string $key, mixed $default = null)
