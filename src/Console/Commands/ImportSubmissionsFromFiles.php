@@ -43,7 +43,13 @@ class ImportSubmissionsFromFiles extends Command
 
                     // save the record if it is a new one
                     if(!$dry_run) {
-                        Export::firstOrNewFormSubmission($submission, $connector->getHandle())->save();
+                        $export = Export::firstOrNewFormSubmission($submission, $connector->getHandle());
+
+                        if($submission->get('exported_at')) {
+                            $export->exported_at = $submission->get('exported_at');
+                        }
+                        
+                        $export->save();
                     }
 
                     $meta[$submission->form->handle()]++;
