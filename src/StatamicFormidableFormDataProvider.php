@@ -4,6 +4,7 @@ namespace Fahlgrendigital\StatamicFormManager;
 
 use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
 use Fahlgrendigital\StatamicFormManager\Console\Commands\CleanOldExports;
+use Fahlgrendigital\StatamicFormManager\Console\Commands\ImportSubmissionsFromFiles;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Http\Filters\ByFormHandle;
 use Fahlgrendigital\StatamicFormManager\Http\Filters\ExportCompleted;
@@ -41,7 +42,10 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
         parent::boot();
 
         if (!$this->app->runningInConsole()) {
-            return;
+            $this->commands([
+                CleanOldExports::class,
+                ImportSubmissionsFromFiles::class
+            ]);
         }
 
         $this->publishes([

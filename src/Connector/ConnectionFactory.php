@@ -3,6 +3,7 @@
 namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Exception;
+use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -34,11 +35,11 @@ class ConnectionFactory
         $config              = config('statamic-formidable-forms.forms');
 
         if (!Arr::has($config, $form_handle)) {
-            throw new \Exception(sprintf("%s: Form not found [%s]", StatamicFormidableFormDataProvider::PACKAGE_NAME, $form_handle));
+            throw new Exception(sprintf("%s: Form not found [%s]", StatamicFormidableFormDataProvider::PACKAGE_NAME, $form_handle));
         }
 
         if (!Arr::has($config[$form_handle], $connection)) {
-            throw new \Exception(sprintf("%s: Form connection not found [%s]", StatamicFormidableFormDataProvider::PACKAGE_NAME, $connection));
+            throw new Exception(sprintf("%s: Form connection not found [%s]", StatamicFormidableFormDataProvider::PACKAGE_NAME, $connection));
         }
 
         $connector = static::initManager(
@@ -64,6 +65,10 @@ class ConnectionFactory
     protected function initManager(string $form_handle, string $key, ?string $subtype = null): BaseConnection
     {
         $class = config(sprintf("statamic-formidable.connectors.%s", $key));
+
+        if (!in_array(ConnectorContract::class, class_implements($class))) {
+            throw new Exception(sprintf("The class %s must implement %s", $class, ConnectorContract::class));
+        }
 
         return $class::init($form_handle, $key, $subtype);
     }

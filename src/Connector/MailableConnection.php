@@ -2,6 +2,7 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Connector;
 
+use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Contracts\MailableConnector as MailableConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
@@ -15,7 +16,7 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
     protected array $recipients;
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public static function init(string $form_handle, string $key, ?string $subtype = null): ConnectorContract
     {

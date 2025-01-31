@@ -74,6 +74,11 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
         return Http::withHeaders($this->headers ?? [])->asJson()->get($this->url, $data)->successful();
     }
 
+    /**
+     * @param Submission $submission
+     * @return bool
+     * @throws Exception
+     */
     public function logPayload(Submission $submission): bool
     {
         $data   = $this->prepData($submission);
