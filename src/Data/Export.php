@@ -2,6 +2,7 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Data;
 
+use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -29,9 +30,14 @@ class Export extends Model
      * ================================
      */
 
-    public function scopeForSubmission(Builder $query, Submission $submission)
+    public function scopeForSubmission(Builder $query, Submission $submission): void
     {
         $query->where('submission_id', $submission->id());
+    }
+
+    public function scopeForConnection(Builder $query, BaseConnection $connection): void
+    {
+        $query->where('destination', $connection->getHandle());
     }
 
     public function scopeForIndexPage(Builder $query)
