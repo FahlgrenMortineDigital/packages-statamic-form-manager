@@ -59,8 +59,6 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
         ByFormHandle::register();
 
         $this->bootDatabase()->bootAddonNav()->bootAddonViews();
-
-        //Event::listen(SubmissionSaved::class, FormSubmissionsManager::class);
     }
 
     public function register(): void
