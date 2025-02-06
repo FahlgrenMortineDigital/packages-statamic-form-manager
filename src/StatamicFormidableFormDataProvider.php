@@ -48,9 +48,10 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
             ]);
         }
 
-        $this->publishes([
-            __DIR__ . '/../database/migrations/create_exports_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_exports_table.php'),
-        ], 'statamic-formidable-migrations');
+        // dev: hide migrations publishing for now
+//        $this->publishes([
+//            __DIR__ . '/../database/migrations/create_exports_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', time()) . '_create_exports_table.php'),
+//        ], 'statamic-formidable-migrations');
     }
 
     public function bootAddon(): void
