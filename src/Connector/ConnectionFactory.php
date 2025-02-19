@@ -52,8 +52,8 @@ class ConnectionFactory
 
         $form_config = new FormConfig($form_handle, $connector_key_parts[0], $connector_key_parts[1] ?? null);
 
-        if ($fake = $form_config->localValue('::fake', FakeResponse::SUCCESS->value)) {
-            $this->handleFake($connector, $fake);
+        if ($form_config->localValue('::fake')) {
+            $this->handleFake($connector, $form_config->localValue('::fake-type', FakeResponse::SUCCESS->value));
         }
 
         if ($debug = $form_config->localValue('::debug', false)) {
