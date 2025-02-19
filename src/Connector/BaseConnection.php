@@ -56,12 +56,13 @@ abstract class BaseConnection
     public function send(Submission $submission): bool
     {
         $prepped_data = $this->prepData($submission);
+        $submission_helper = new \Fahlgrendigital\StatamicFormManager\Support\Submission($submission);
 
         if ($this->debug) {
             Log::debug(sprintf('> %s: %s', StatamicFormidableFormDataProvider::PACKAGE_NAME, json_encode($prepped_data)));
         }
 
-        if (!$this->shouldSend($submission->toArray())) {
+        if (!$this->shouldSend($submission_helper->toArray())) {
             if ($this->debug) {
                 Log::debug(sprintf('> %s: CRM gate failed', StatamicFormidableFormDataProvider::PACKAGE_NAME));
             }

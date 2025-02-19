@@ -23,9 +23,10 @@ class SendFormSubmission implements ShouldQueue
     {
         $success = SendSubmission::make($this->connector, $this->submission)
                       ->handle();
+        $id = (new \Fahlgrendigital\StatamicFormManager\Support\Submission($this->submission))->id();
 
         if(!$success) {
-            $this->fail(new \Exception('Failed to send form submission: ' . $this->submission->id()));
+            $this->fail(new \Exception('Failed to send form submission: ' . $id));
         }
     }
 }

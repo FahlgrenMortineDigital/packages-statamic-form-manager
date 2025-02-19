@@ -102,10 +102,12 @@ class Export extends Model
 
     public static function firstOrNewFormSubmission(Submission $submission, string $destination): Export
     {
+        $submission_helper = new \Fahlgrendigital\StatamicFormManager\Support\Submission($submission);
+
         // forms can have many submissions and many destinations, but a submission will only have unique destinations
         return static::firstOrCreate([
             'form_handle'   => $submission->form->handle(),
-            'submission_id' => $submission->id(),
+            'submission_id' => $submission_helper->id(),
             'destination'   => $destination,
         ]);
     }

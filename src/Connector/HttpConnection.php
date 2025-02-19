@@ -62,7 +62,9 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
      */
     protected function prepData(Submission $submission): array
     {
-        return $this->mappedData($submission->toArray());
+        $submission_helper = new \Fahlgrendigital\StatamicFormManager\Support\Submission($submission);
+        
+        return $this->mappedData($submission_helper->toArray());
     }
 
     public static function rules(): array
