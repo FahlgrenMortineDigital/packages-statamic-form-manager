@@ -6,6 +6,7 @@ use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Enums\FakeResponse;
 use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
+use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 
@@ -22,7 +23,7 @@ class ConnectionFactory
         return collect($config[$handle])->filter(function ($config) {
             // only fetch enabled form managers
             return $config['::enabled'] ?? false;
-        })->map(function ($config, $key) use($handle) {
+        })->map(function ($config, $key) use ($handle) {
             return $this->getByConnection($handle, $key);
         })->flatten();
     }
@@ -49,12 +50,14 @@ class ConnectionFactory
             $connector_key_parts[1] ?? null
         );
 
-        if (Arr::get($config, '::fake')) {
-            $this->handleFake($connector, $config);
+        $form_config = new FormConfig($form_handle, $connector_key_parts[0], $connector_key_parts[1] ?? null);
+
+        if ($fake = $form_config->localValue('::fake', FakeResponse::SUCCESS->value)) {
+            $this->handleFake($connector, $fake);
         }
 
-        if (Arr::get($config, '::debug')) {
-            $connector->debug($config['::debug']);
+        if ($debug = $form_config->localValue('::debug', false)) {
+            $connector->debug($debug);
         }
 
         return $connector;
@@ -74,13 +77,11 @@ class ConnectionFactory
         return $class::init($form_handle, $key, $subtype);
     }
 
-    protected function handleFake(BaseConnection $connection, array $config): void
+    protected function handleFake(BaseConnection $connection, string $fake_type): void
     {
         $connection->fakeIt();
 
-        $type = Arr::get($config, '::fake-type', FakeResponse::SUCCESS->value);
-
-        if ($type === FakeResponse::SUCCESS->value) {
+        if ($fake_type === FakeResponse::SUCCESS->value) {
             $connection->fakeSuccess();
         } else {
             $connection->fakeFail();
