@@ -4,6 +4,7 @@ namespace Fahlgrendigital\StatamicFormManager\Connector;
 
 use Fahlgrendigital\StatamicFormManager\Contracts\FormFieldTransformer;
 use Fahlgrendigital\StatamicFormManager\Contracts\FormGate;
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Exceptions\MissingFormFieldTransformerException;
 use Fahlgrendigital\StatamicFormManager\Connector\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
@@ -28,9 +29,9 @@ abstract class BaseConnection
 
     abstract protected function makeRequest(array $data): bool;
 
-    abstract protected function prepData(Submission $submission): array;
+    abstract protected function prepData(SubmissionInterface $submission): array;
 
-    abstract public function logPayload(Submission $submission): bool;
+    abstract public function logPayload(SubmissionInterface $submission): bool;
 
     abstract public static function rules(): array;
 
@@ -53,16 +54,15 @@ abstract class BaseConnection
         return $this;
     }
 
-    public function send(Submission $submission): bool
+    public function send(SubmissionInterface $submission): bool
     {
         $prepped_data = $this->prepData($submission);
-        $submission_helper = new \Fahlgrendigital\StatamicFormManager\Support\Submission($submission);
 
         if ($this->debug) {
             Log::debug(sprintf('> %s: %s', StatamicFormidableFormDataProvider::PACKAGE_NAME, json_encode($prepped_data)));
         }
 
-        if (!$this->shouldSend($submission_helper->toArray())) {
+        if (!$this->shouldSend($submission->toArray())) {
             if ($this->debug) {
                 Log::debug(sprintf('> %s: CRM gate failed', StatamicFormidableFormDataProvider::PACKAGE_NAME));
             }

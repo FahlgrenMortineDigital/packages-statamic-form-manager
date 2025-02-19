@@ -8,6 +8,7 @@ use Fahlgrendigital\StatamicFormManager\Connector\Traits\HasHeaders;
 use Fahlgrendigital\StatamicFormManager\Connector\Traits\HasHttpVerbs;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Contracts\HttpConnector;
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
@@ -60,11 +61,9 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
     /**
      * @throws Exception
      */
-    protected function prepData(Submission $submission): array
+    protected function prepData(SubmissionInterface $submission): array
     {
-        $submission_helper = new \Fahlgrendigital\StatamicFormManager\Support\Submission($submission);
-        
-        return $this->mappedData($submission_helper->toArray());
+        return $this->mappedData($submission->toArray());
     }
 
     public static function rules(): array
@@ -92,11 +91,9 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
     }
 
     /**
-     * @param Submission $submission
-     * @return bool
      * @throws Exception
      */
-    public function logPayload(Submission $submission): bool
+    public function logPayload(SubmissionInterface $submission): bool
     {
         $data   = $this->prepData($submission);
         $export = Export::forSubmission($submission)->forConnection($this)->first();

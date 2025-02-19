@@ -1,8 +1,13 @@
 <?php
 
-namespace Fahlgrendigital\StatamicFormManager\Support;
+namespace Fahlgrendigital\StatamicFormManager\Data;
 
-class Submission
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
+
+/**
+ * @property $form
+ */
+class SubmissionWrapper implements SubmissionInterface
 {
     public function __construct(protected $submission)
     {
@@ -28,5 +33,10 @@ class Submission
         }
 
         return $data;
+    }
+
+    public function __call($method, $arguments)
+    {
+        return call_user_func_array([$this->submission, $method], $arguments);
     }
 }

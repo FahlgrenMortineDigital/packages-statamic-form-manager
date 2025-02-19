@@ -3,6 +3,7 @@
 namespace Fahlgrendigital\StatamicFormManager\Listeners;
 
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Jobs\SendFormSubmission;
 use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
 use Illuminate\Support\Facades\Config;
@@ -16,9 +17,10 @@ class FormSubmissionsManager
         /** @var Form $form */
         $form     = $event->submission->form;
         $connectors = (new ConnectionFactory())->getConnectors($form->handle());
+        $submission = app(SubmissionInterface::class, ['submission' => $event->submission]);
 
-        $connectors->each(function (ConnectorContract $manager) use ($event) {
-            SendFormSubmission::dispatch($manager, $event->submission)
+        $connectors->each(function (ConnectorContract $manager) use ($submission) {
+            SendFormSubmission::dispatch($manager, $submission)
                               ->onConnection(Config::get('statamic-form-manager.queue.connection'))
                               ->onQueue(Config::get('statamic-form-manager.queue.queue'));
         });

@@ -2,13 +2,14 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Connector;
 
+use Closure;
 use Exception;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Contracts\MailableConnector as MailableConnectorContract;
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Mail;
-use Statamic\Forms\Submission;
 
 class MailableConnection extends BaseConnection implements MailableConnectorContract, ConnectorContract
 {
@@ -42,7 +43,7 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
     }
 
     # Prep submission data for form
-    protected function prepData(Submission $submission): array
+    protected function prepData(SubmissionInterface $submission): array
     {
         return $submission->toArray();
     }
@@ -51,7 +52,7 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
     {
         return [
             'mailto'   => ['required'],
-            'mailable' => ['required', function (string $attribute, mixed $value, \Closure $fail) {
+            'mailable' => ['required', function (string $attribute, mixed $value, Closure $fail) {
                 if (!class_exists($value)) {
                     $fail(sprintf("The %s class does not exist.", $value));
                 }
@@ -92,7 +93,7 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
         $this->mailable = $mailable_class;
     }
 
-    public function logPayload(Submission $submission): bool
+    public function logPayload(SubmissionInterface $submission): bool
     {
         //todo - implement logging for mailable connections
         return false;

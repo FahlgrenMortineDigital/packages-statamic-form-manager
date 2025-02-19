@@ -5,7 +5,9 @@ namespace Fahlgrendigital\StatamicFormManager;
 use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
 use Fahlgrendigital\StatamicFormManager\Console\Commands\CleanOldExports;
 use Fahlgrendigital\StatamicFormManager\Console\Commands\ImportSubmissionsFromFiles;
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
+use Fahlgrendigital\StatamicFormManager\Data\SubmissionWrapper;
 use Fahlgrendigital\StatamicFormManager\Http\Filters\ByFormHandle;
 use Fahlgrendigital\StatamicFormManager\Http\Filters\ExportCompleted;
 use Fahlgrendigital\StatamicFormManager\Listeners\FormSubmissionsManager;
@@ -68,6 +70,10 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
 
         $this->app->singleton(ConnectionFactory::class, function () {
             return new ConnectionFactory();
+        });
+
+        $this->app->bind(SubmissionInterface::class, function ($app, $params) {
+            return new SubmissionWrapper($params['submission']);
         });
     }
 
