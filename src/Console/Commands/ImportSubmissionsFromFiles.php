@@ -3,6 +3,7 @@
 namespace Fahlgrendigital\StatamicFormManager\Console\Commands;
 
 use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Facades\ConnectionFactoryFacade;
 use Illuminate\Console\Command;
@@ -33,6 +34,7 @@ class ImportSubmissionsFromFiles extends Command
             }
 
             $form->submissions()->each(function (Submission $submission) use(&$meta, $bar, $dry_run) {
+                $submission = app(SubmissionInterface::class, ['submission' => $submission]);
                 $connectors = ConnectionFactoryFacade::getConnectors($submission->form->handle());
 
                 $connectors->each(function(BaseConnection $connector) use($submission, &$meta, $dry_run) {

@@ -39,4 +39,9 @@ class SubmissionWrapper implements SubmissionInterface
     {
         return call_user_func_array([$this->submission, $method], $arguments);
     }
+
+    public function __get($name)
+    {
+        return $this->submission->$name;
+    }
 }
