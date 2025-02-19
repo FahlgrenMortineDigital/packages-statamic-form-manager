@@ -15,10 +15,10 @@ class SubmissionWrapper implements SubmissionInterface
 
     public function id(): ?string
     {
-        if ($this->submission instanceof \Statamic\Forms\Submission) {
-            return $this->submission->id();
-        } else if (class_exists('\Statamic\Eloquent\Forms\Submission') && $this->submission instanceof \Statamic\Eloquent\Forms\Submission) {
+        if (class_exists('\Statamic\Eloquent\Forms\Submission') && $this->submission instanceof \Statamic\Eloquent\Forms\Submission) {
             return $this->submission->model()->id;
+        } else if ($this->submission instanceof \Statamic\Forms\Submission) {
+            return $this->submission->id();
         }
 
         return null;
