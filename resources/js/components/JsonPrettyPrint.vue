@@ -17,6 +17,6 @@ export default {
 
 <template>
     <div>
-        <vue-json-pretty :data="data" />
+        <vue-json-pretty :show-icon="true" :data="data" />
     </div>
 </template>
