@@ -30,7 +30,7 @@ class ExportCompleted extends Filter
     public function autoApply(): array
     {
         return [
-            'completed' => 'yes'
+            //'completed' => 'yes'
         ];
     }
 
