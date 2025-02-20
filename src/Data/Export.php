@@ -54,7 +54,7 @@ class Export extends Model
                            ->selectRaw('CAST(SUM(CASE WHEN exported_at IS NULL AND failed_at IS NULL THEN 1 ELSE 0 END) AS UNSIGNED) as pending_count')
                            ->selectRaw('COUNT(failed_at) as failed_count');
 
-        $query->joinSub($subQuery, 'sub_query', function ($join, $table) {
+        $query->joinSub($subQuery, 'sub_query', function ($join) use($table) {
             $join->on("$table.submission_id", '=', 'sub_query.submission_id');
         })
               ->groupBy("$table.form_handle", 'sub_query.submission_id', 'sub_query.exported_count', 'sub_query.failed_count', 'sub_query.pending_count')
