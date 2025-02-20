@@ -14,10 +14,13 @@ class Export extends Model
 {
     protected $guarded = [];
 
+    public $table = 'formidable_exports';
+
     protected $casts = [
         'submission_payload' => 'array',
-        'failed_at'          => 'datetime',
-        'exported_at'        => 'datetime',
+        'failed_at' => 'datetime',
+        'exported_at' => 'datetime',
+        'errors' => 'array',
     ];
 
     public function getConnectionName(): string
@@ -105,9 +108,9 @@ class Export extends Model
     {
         // forms can have many submissions and many destinations, but a submission will only have unique destinations
         return static::firstOrCreate([
-            'form_handle'   => $submission->form->handle(),
+            'form_handle' => $submission->form->handle(),
             'submission_id' => $submission->id(),
-            'destination'   => $destination,
+            'destination' => $destination,
         ]);
     }
 }

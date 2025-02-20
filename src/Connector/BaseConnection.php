@@ -10,7 +10,6 @@ use Fahlgrendigital\StatamicFormManager\Connector\Traits\CanFake;
 use Fahlgrendigital\StatamicFormManager\StatamicFormidableFormDataProvider;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
-use Statamic\Forms\Submission;
 
 abstract class BaseConnection
 {

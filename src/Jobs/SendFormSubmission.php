@@ -28,4 +28,13 @@ class SendFormSubmission implements ShouldQueue
             $this->fail(new \Exception('Failed to send form submission: ' . $this->submission->id()));
         }
     }
+
+    public function tags(): array
+    {
+        return [
+            'formidable',
+            'connector:' . $this->connector->getHandle(),
+            'submission:'. $this->submission->id()
+        ];
+    }
 }
