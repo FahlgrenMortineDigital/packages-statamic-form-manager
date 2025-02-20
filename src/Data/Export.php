@@ -44,26 +44,27 @@ class Export extends Model
         $query->where('destination', $connection->getHandle());
     }
 
-    public function scopeForIndexPage(Builder $query)
+    public function scopeForIndexPage(Builder $query): void
     {
-        $sub_query = Export::query()
+        $table = (new self)->getTable();
+        $subQuery = Export::query()
                            ->groupBy('submission_id')
                            ->select('submission_id')
                            ->selectRaw('COUNT(exported_at) as exported_count')
                            ->selectRaw('CAST(SUM(CASE WHEN exported_at IS NULL AND failed_at IS NULL THEN 1 ELSE 0 END) AS UNSIGNED) as pending_count')
                            ->selectRaw('COUNT(failed_at) as failed_count');
 
-        $query->joinSub($sub_query, 'sub_query', function ($join) {
-            $join->on('exports.submission_id', '=', 'sub_query.submission_id');
+        $query->joinSub($subQuery, 'sub_query', function ($join, $table) {
+            $join->on("$table.submission_id", '=', 'sub_query.submission_id');
         })
-              ->groupBy('exports.form_handle', 'sub_query.submission_id', 'sub_query.exported_count', 'sub_query.failed_count', 'sub_query.pending_count')
+              ->groupBy("$table.form_handle", 'sub_query.submission_id', 'sub_query.exported_count', 'sub_query.failed_count', 'sub_query.pending_count')
               ->select(
-                  'exports.form_handle',
+                  "$table.form_handle",
                   'sub_query.submission_id',
                   'sub_query.exported_count',
                   'sub_query.failed_count',
                   'sub_query.pending_count',
-                  DB::raw('MIN(exports.created_at) as earliest_created_at'),
+                  DB::raw("MIN($table.created_at) as earliest_created_at"),
                   DB::raw('CASE WHEN sub_query.exported_count = 0 THEN 0 WHEN sub_query.failed_count > 0 THEN 0 ELSE 1 END as completed'),
               );
     }
