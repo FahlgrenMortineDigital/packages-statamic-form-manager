@@ -77,7 +77,7 @@
                 </div>
 
                 @if($export->errors)
-                    <p class="bg-red-400 rounded p-2">Errors</p>
+                    <p class="bg-red-400 rounded p-2 my-4">Errors</p>
                     <json-pretty-print :data="{{ json_encode($export->errors) }}" class="text-gray dark:text-dark-150 text-sm my-2"></json-pretty-print>
                 @endif
             </div>
