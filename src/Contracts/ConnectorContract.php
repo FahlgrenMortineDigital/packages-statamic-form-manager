@@ -2,9 +2,11 @@
 
 namespace Fahlgrendigital\StatamicFormManager\Contracts;
 
+use Fahlgrendigital\StatamicFormManager\Connector\ConnectorResponse;
+
 interface ConnectorContract
 {
-    public function send(SubmissionInterface $submission): bool;
+    public function send(SubmissionInterface $submission): ConnectorResponse;
 
     public function getHandle(): string;
 

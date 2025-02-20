@@ -73,7 +73,7 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
         ];
     }
 
-    protected function makeRequest(array $data): bool
+    protected function makeRequest(array $data): ConnectorResponse
     {
         $res = Http::withHeaders($this->headers ?? []);
 
@@ -83,11 +83,16 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
             $res = $res->asJson()->get($this->url, $data);
         }
 
-        if ($this->hasRegisteredResponseGate()) {
-            return $this->responsesPasses($res);
-        }
+        $connectorResponse = (new ConnectorResponse());
+        $connectorResponse->guzzleResponse = $res;
 
-        return $res->successful();
+        $connectorResponse->setPassState(
+            $this->hasRegisteredResponseGate()
+                ? $this->responsesPasses($res)
+                : $res->successful()
+        );
+
+        return $connectorResponse;
     }
 
     /**

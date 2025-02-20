@@ -60,8 +60,10 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
         ];
     }
 
-    protected function makeRequest(array $data): bool
+    protected function makeRequest(array $data): ConnectorResponse
     {
+        $response = new ConnectorResponse();
+
         foreach ($this->recipients as $recipient) {
             $mailable = (new $this->mailable(collect($data)))
                 ->onConnection(config('statamic-form-manager.queue.connection'))
@@ -70,7 +72,7 @@ class MailableConnection extends BaseConnection implements MailableConnectorCont
             Mail::to($recipient)->queue($mailable);
         }
 
-        return true;
+        return $response->setPassState(true);
     }
 
     public function setRecipients(array $recipients): void

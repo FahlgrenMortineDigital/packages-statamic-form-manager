@@ -74,9 +74,9 @@ class Export extends Model
      * ================================
      */
 
-    public function markFailed(): void
+    public function markFailed(string $errors): void
     {
-        $this->update(['failed_at' => now(), 'exported_at' => null]);
+        $this->update(['failed_at' => now(), 'exported_at' => null, 'errors' => $errors]);
     }
 
     public function markSucceeded(): void

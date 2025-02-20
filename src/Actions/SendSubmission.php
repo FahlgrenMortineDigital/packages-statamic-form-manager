@@ -14,19 +14,19 @@ class SendSubmission extends BaseAction
 
     public function handle(): bool
     {
-        $success = $this->connector->send($this->submission);
+        $response = $this->connector->send($this->submission);
         // create the export after the HTTP call is made in case it throws any exceptions.
         // we don't want any orphaned exports due to HTTP exceptions.
         $export  = Export::firstOrNewFormSubmission($this->submission, $this->connector->getHandle());
 
-        if (!$success) {
-            $export->markFailed();
+        if (!$response->success) {
+            $export->markFailed($response->guzzleResponse->json());
         } else {
             $export->markSucceeded();
         }
 
         $this->connector->logPayload($this->submission);
 
-        return $success;
+        return $response->success;
     }
 }

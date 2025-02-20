@@ -26,7 +26,7 @@ abstract class BaseConnection
 
     protected array $defaults = [];
 
-    abstract protected function makeRequest(array $data): bool;
+    abstract protected function makeRequest(array $data): ConnectorResponse;
 
     abstract protected function prepData(SubmissionInterface $submission): array;
 
@@ -53,7 +53,7 @@ abstract class BaseConnection
         return $this;
     }
 
-    public function send(SubmissionInterface $submission): bool
+    public function send(SubmissionInterface $submission): ConnectorResponse
     {
         $prepped_data = $this->prepData($submission);
 
@@ -66,7 +66,7 @@ abstract class BaseConnection
                 Log::debug(sprintf('> %s: CRM gate failed', StatamicFormidableFormDataProvider::PACKAGE_NAME));
             }
 
-            return false;
+            return (new ConnectorResponse())->setPassState(false);
         }
 
         if ($this->isFaking()) {
