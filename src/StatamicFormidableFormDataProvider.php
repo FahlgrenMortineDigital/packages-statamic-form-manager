@@ -62,7 +62,7 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
         ExportCompleted::register();
         ByFormHandle::register();
 
-        $this->bootDatabase()->bootAddonNav()->bootAddonViews();
+        $this->bootAddonNav()->bootAddonViews();
     }
 
     public function register(): void
@@ -88,26 +88,6 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
             __DIR__ . '/../config/statamic-formidable.php'       => config_path('statamic-formidable.php'),
             __DIR__ . '/../config/statamic-formidable-forms.php' => config_path('statamic-formidable-forms.php'),
         ], 'statamic-formidable-config');
-
-        return $this;
-    }
-
-    protected function bootDatabase(): self
-    {
-        // table exists so bail
-        if (Schema::connection(config('statamic-formidable.export.connection'))->hasTable((new Export())->getTable())) {
-            return $this;
-        }
-
-        // migrations have not been run so run 'em
-
-        $defaultConnection = DB::getDefaultConnection();
-        DB::setDefaultConnection(config('statamic-formidable.exports.connection'));
-
-        require_once(__DIR__ . '/../database/migrations/create_exports_table.php.stub');
-        (new \CreateExportsTable())->up();
-
-        DB::setDefaultConnection($defaultConnection);
 
         return $this;
     }
