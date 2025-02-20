@@ -51,9 +51,9 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
         }
 
         $this->publishes([
-            __DIR__ . '/../database/migrations/create_exports_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', now()) . '_create_exports_table.php'),
-            __DIR__ . '/../database/migrations/rename_exports_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', now()->addSecond()) . '_rename_exports_table.php'),
-            __DIR__ . '/../database/migrations/add_errors_to_exports_table.php.stub' => database_path('migrations/' . date('Y_m_d_His', now()->addSeconds(2)) . '_add_errors_to_exports_table.php'),
+            __DIR__ . '/../database/migrations/create_exports_table.php.stub' => database_path('migrations/' . now()->format('Y_m_d_His') . '_create_exports_table.php'),
+            __DIR__ . '/../database/migrations/rename_exports_table.php.stub' => database_path('migrations/' . now()->addSecond()->format('Y_m_d_His') . '_rename_exports_table.php'),
+            __DIR__ . '/../database/migrations/add_errors_to_exports_table.php.stub' => database_path('migrations/' . now()->addSeconds(2)->format('Y_m_d_His') . '_add_errors_to_exports_table.php'),
         ], 'statamic-formidable-migrations');
     }
 
