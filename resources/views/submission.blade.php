@@ -75,12 +75,18 @@
                         </form>
                     @endif
                 </div>
+
+                @if($export->errors)
+                    <div class="bg-red-300">
+                        <json-pretty-print :data="{{ json_encode($export->errors) }}" class="text-gray dark:text-dark-150 text-sm my-2"></json-pretty-print>
+                    </div>
+                @endif
             </div>
         @endforeach
     </div>
 
     @include('statamic::partials.docs-callout', [
         'topic' => 'Formidable',
-        'url' => 'https://statamic.com/addons/rias/redirect'
+        'url' => 'https://packagist.org/packages/fahlgrendigital/packages-statamic-form-manager'
     ])
 @endsection
