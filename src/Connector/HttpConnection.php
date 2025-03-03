@@ -79,16 +79,16 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
 
     protected function makeRequest(array $data): ConnectorResponse
     {
-        $res = Http::withHeaders($this->headers ?? []);
+        $req = Http::withHeaders($this->headers ?? []);
 
         if ($this->method === 'POST') {
             if($this->asForm) {
-                $res->asForm()->post($this->url, $data);
+                $res = $req->asForm()->post($this->url, $data);
             } else {
-                $res->post($this->url, $data);
+                $res = $req->post($this->url, $data);
             }
         } else {
-            $res = $res->asJson()->get($this->url, $data);
+            $res = $req->asJson()->get($this->url, $data);
         }
 
         $connectorResponse                 = (new ConnectorResponse());
