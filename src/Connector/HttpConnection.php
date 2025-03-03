@@ -23,6 +23,8 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
     public string $url = '';
     public static string $default_method = 'GET';
 
+    public bool $asForm = false;
+
     /**
      * @throws Exception
      */
@@ -35,6 +37,7 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
         $maps          = $form_config->mergeValue('maps');
         $computed      = $form_config->mergeValue('computed');
         $default       = $form_config->mergeValue('default');
+        $asForm        = $form_config->value('::as-form', false);
 
         static::validateData(['url' => $url]);
 
@@ -45,6 +48,7 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
         $instance->headers  = $headers;
         $instance->computed = $computed;
         $instance->handle   = $form_config->key();
+        $instance->asForm   = $asForm;
         $instance->setHttpVerb($form_config->value('::method', static::$default_method));
 
         if ($response_gate) {
@@ -78,12 +82,16 @@ class HttpConnection extends BaseConnection implements ConnectorContract, HttpCo
         $res = Http::withHeaders($this->headers ?? []);
 
         if ($this->method === 'POST') {
-            $res = $res->post($this->url, $data);
+            if($this->asForm) {
+                $res->asForm()->post($this->url, $data);
+            } else {
+                $res->post($this->url, $data);
+            }
         } else {
             $res = $res->asJson()->get($this->url, $data);
         }
 
-        $connectorResponse = (new ConnectorResponse());
+        $connectorResponse                 = (new ConnectorResponse());
         $connectorResponse->guzzleResponse = $res;
 
         $connectorResponse->setPassState(
