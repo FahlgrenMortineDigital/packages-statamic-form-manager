@@ -23,8 +23,8 @@ class ExportsController
         $sortDirection = request('order', 'asc');
 
         if (!$sortField && !request('search')) {
-            $sortField     = 'form_handle';
-            $sortDirection = 'asc';
+            $sortField     = 'earliest_created_at';
+            $sortDirection = 'desc';
         }
 
         if ($sortField) {
