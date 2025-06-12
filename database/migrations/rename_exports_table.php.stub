@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if(Schema::hasTable('formidable_exports')) {
+            return;
+        }
+        
         Schema::rename('exports', 'formidable_exports');
     }
 
