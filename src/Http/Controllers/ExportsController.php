@@ -4,6 +4,7 @@ namespace Fahlgrendigital\StatamicFormManager\Http\Controllers;
 
 use Fahlgrendigital\StatamicFormManager\Actions\SendSubmission;
 use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
+use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Statamic\Facades\CP\Toast;
 
@@ -15,7 +16,8 @@ class ExportsController
 
         abort_if(is_null($connection), 404, 'Form connection not found');
 
-        $success = SendSubmission::make($connection, $export->submission())->handle();
+        $submission = app(SubmissionInterface::class, ['submission' => $export->submission()]);
+        $success = SendSubmission::make($connection, $submission)->handle();
 
         if($success) {
             Toast::success('Successfully sent form data off to ' . $export->destination);
