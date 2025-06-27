@@ -82,7 +82,7 @@ class Export extends Model
 
     public function markSucceeded(): void
     {
-        $this->update(['exported_at' => now(), 'failed_at' => null]);
+        $this->update(['exported_at' => now(), 'failed_at' => null, 'errors' => null]);
     }
 
     public function completed(): bool
