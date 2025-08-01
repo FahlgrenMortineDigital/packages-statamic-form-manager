@@ -20,7 +20,7 @@ class SendSubmission extends BaseAction
         $export  = Export::firstOrNewFormSubmission($this->submission, $this->connector->getHandle());
 
         if (!$response->success) {
-            $export->markFailed($response->guzzleResponse->json());
+            $export->markFailed($response->guzzleResponse->json() ?? ['error' => 'Unknown error occurred']);
         } else {
             $export->markSucceeded();
         }
