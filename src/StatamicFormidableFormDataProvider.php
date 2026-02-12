@@ -107,7 +107,8 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
                 $nav->item('Dashboard')->route('formidable.index')->icon('home'),
             ];
 
-            $nav->create('Formidable')
+            $nav->item('Formidable')
+                ->section('Formidable')
                 ->route('formidable.index')
                 ->icon('checkboxes')
                 ->children($items);
