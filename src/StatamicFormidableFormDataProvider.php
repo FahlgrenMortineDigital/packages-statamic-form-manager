@@ -103,14 +103,13 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
     protected function bootAddonNav(): self
     {
         Nav::extend(function (NavBase $nav) {
-            $items = [];
-
-            $items['Dashboard'] = cp_route('formidable.index');
+            $items = [
+                $nav->item('Dashboard')->route('formidable.index')->icon('home'),
+            ];
 
             $nav->create('Formidable')
                 ->route('formidable.index')
                 ->icon('checkboxes')
-                ->can('view redirects')
                 ->children($items);
         });
 
