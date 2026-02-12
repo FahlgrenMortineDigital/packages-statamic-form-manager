@@ -6,15 +6,9 @@ use Fahlgrendigital\StatamicFormManager\Connector\ConnectionFactory;
 use Fahlgrendigital\StatamicFormManager\Console\Commands\CleanOldExports;
 use Fahlgrendigital\StatamicFormManager\Console\Commands\ImportSubmissionsFromFiles;
 use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
-use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Data\SubmissionWrapper;
 use Fahlgrendigital\StatamicFormManager\Http\Filters\ByFormHandle;
 use Fahlgrendigital\StatamicFormManager\Http\Filters\ExportCompleted;
-use Fahlgrendigital\StatamicFormManager\Listeners\FormSubmissionsManager;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Facades\Schema;
-use Statamic\Events\SubmissionSaved;
 use Statamic\Facades\CP\Nav;
 use Statamic\CP\Navigation\Nav as NavBase;
 use Statamic\Providers\AddonServiceProvider;
@@ -110,7 +104,7 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
             $nav->item('Formidable')
                 ->section('Tools')
                 ->route('formidable.index')
-                ->icon('checkboxes')
+                ->icon('fieldtype-structures')
                 ->children($items);
         });
 
