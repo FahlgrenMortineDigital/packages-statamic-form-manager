@@ -9,9 +9,7 @@
           :action-url="actionUrl"
           :preferences-prefix="preferencesPrefix"
           :filters="filters"
-          :reorderable="true"
           push-query
-          @request-completed="requestComplete"
         >
             <template v-slot:cell-form_handle="{ row: record }">
                 <a class="text-blue hover:text-blue-dark"
@@ -34,8 +32,7 @@ import { ref } from 'vue';
 const props = defineProps({
     actionUrl: String,
     columns: Array,
-    filters: Array,
-    reordering: Boolean,
+    filters: Array
 });
 const preferencesPrefix = ref(`formidable.exports`);
 const requestUrl = ref(cp_url(`formidable/api/exports`));

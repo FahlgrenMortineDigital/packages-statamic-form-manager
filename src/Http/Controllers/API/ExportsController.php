@@ -4,7 +4,6 @@ namespace Fahlgrendigital\StatamicFormManager\Http\Controllers\API;
 
 use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Http\Resources\Api\ExportResource;
-use Fahlgrendigital\StatamicFormManager\Http\Resources\ExportCollection;
 use Statamic\Query\Scopes\Filters\Concerns\QueriesFilters;
 
 class ExportsController
@@ -16,9 +15,6 @@ class ExportsController
         $query = Export::query()->when(request('search'), function ($query, $search) {
             $query->where('form_handle', 'like', "%{$search}%")->orWhere('submission_payload', 'like', "%{$search}%");
         })->forIndexPage();
-
-        // Statamic vue component utf8btoa encodes the filters, so we need to decode them
-        $activeFilterBadges = $this->queryFilters($query, json_decode(base64_decode(request()->get('filters')), true));
 
         $sortField     = request('sort');
         $sortDirection = request('order', 'asc');
