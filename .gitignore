@@ -9,7 +9,7 @@ node_modules
 composer.lock
 
 # Testing
-.phpunit.result.cache
+.phpunit.*
 
 node_modules
 
