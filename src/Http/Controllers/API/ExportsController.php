@@ -3,6 +3,7 @@
 namespace Fahlgrendigital\StatamicFormManager\Http\Controllers\API;
 
 use Fahlgrendigital\StatamicFormManager\Data\Export;
+use Fahlgrendigital\StatamicFormManager\Http\Resources\Api\ExportResource;
 use Fahlgrendigital\StatamicFormManager\Http\Resources\ExportCollection;
 use Statamic\Query\Scopes\Filters\Concerns\QueriesFilters;
 
@@ -33,13 +34,7 @@ class ExportsController
 
         $exports = $query->paginate(request('perPage'));
 
-        return (new ExportCollection($exports))
-            ->columnPreferenceKey('form_handle')
-            ->additional([
-            'meta' => [
-                'activeFilterBadges' => $activeFilterBadges,
-            ],
-        ]);
+        return ExportResource::collection($exports);
     }
 
     public function show(Export $export)
