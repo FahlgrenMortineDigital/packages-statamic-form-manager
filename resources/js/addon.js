@@ -1,5 +1,9 @@
 import ExportsListing from './components/ExportsListing.vue';
-import JsonPrettyPrint from "./components/JsonPrettyPrint.vue";
+import JsonPrettyPrint from './components/JsonPrettyPrint.vue';
+import Dashboard from './pages/Dashboard.vue';
 
-Statamic.$components.register('exports-listing', ExportsListing);
-Statamic.$components.register('json-pretty-print', JsonPrettyPrint);
+Statamic.booting(() => {
+    Statamic.$inertia.register('formidable::Dashboard', Dashboard);
+    Statamic.$components.register('exports-listing', ExportsListing);
+    Statamic.$components.register('json-pretty-print', JsonPrettyPrint);
+});
