@@ -107,7 +107,7 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
 
             $items['Dashboard'] = cp_route('formidable.index');
 
-            $nav->tools('Formidable')
+            $nav->create('Formidable')
                 ->route('formidable.index')
                 ->icon('checkboxes')
                 ->can('view redirects')
