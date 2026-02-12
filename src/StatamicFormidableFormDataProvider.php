@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Statamic\Events\SubmissionSaved;
 use Statamic\Facades\CP\Nav;
+use Statamic\CP\Navigation\Nav as NavBase;
 use Statamic\Providers\AddonServiceProvider;
 
 class StatamicFormidableFormDataProvider extends AddonServiceProvider
@@ -101,7 +102,7 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
 
     protected function bootAddonNav(): self
     {
-        Nav::extend(function ($nav) {
+        Nav::extend(function (NavBase $nav) {
             $items = [];
 
             $items['Dashboard'] = cp_route('formidable.index');
@@ -109,7 +110,6 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
             $nav->tools('Formidable')
                 ->route('formidable.index')
                 ->icon('checkboxes')
-                ->active('formidable')
                 ->can('view redirects')
                 ->children($items);
         });
