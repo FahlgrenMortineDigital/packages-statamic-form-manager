@@ -9,9 +9,4 @@
 
     <exports-listing :filters="{{ $filters->toJson() }}"></exports-listing>
 
-    @include('statamic::partials.docs-callout', [
-        'topic' => 'Formidable',
-        'url' => 'https://statamic.com/addons/rias/redirect'
-    ])
-
 @endsection
