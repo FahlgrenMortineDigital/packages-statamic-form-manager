@@ -5,6 +5,7 @@ namespace Fahlgrendigital\StatamicFormManager\Data;
 use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
 use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Statamic\Facades\FormSubmission;
@@ -26,6 +27,39 @@ class Export extends Model
     public function getConnectionName(): string
     {
         return config('statamic-formidable.exports.connection');
+    }
+
+    /**
+     * ================================
+     * Attributes
+     * ================================
+     */
+    protected function runUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => route('statamic.cp.formidable.exports', $this)
+        );
+    }
+
+    protected function completed(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->exported_at !== null && $this->failed_at === null
+        );
+    }
+
+    protected function pending(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->exported_at === null && $this->failed_at === null
+        );
+    }
+
+    protected function failed(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->failed_at !== null
+        );
     }
 
     /**
@@ -83,21 +117,6 @@ class Export extends Model
     public function markSucceeded(): void
     {
         $this->update(['exported_at' => now(), 'failed_at' => null, 'errors' => null]);
-    }
-
-    public function completed(): bool
-    {
-        return $this->exported_at !== null && $this->failed_at === null;
-    }
-
-    public function pending(): bool
-    {
-        return $this->exported_at === null && $this->failed_at === null;
-    }
-
-    public function failed(): bool
-    {
-        return $this->failed_at !== null;
     }
 
     public function submission(): ?Submission
