@@ -1,6 +1,6 @@
 <script setup>
 import { Head } from '@statamic/cms/inertia';
-import { Header, DocsCallout } from '@statamic/cms/ui';
+import { DocsCallout } from '@statamic/cms/ui';
 import ExportsListing from '../components/ExportsListing.vue';
 
 defineProps({
