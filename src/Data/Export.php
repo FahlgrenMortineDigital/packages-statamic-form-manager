@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Statamic\Facades\FormSubmission;
 use Statamic\Forms\Submission;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 
 class Export extends Model
 {
@@ -41,21 +42,21 @@ class Export extends Model
         );
     }
 
-    protected function completed(): Attribute
+    protected function isCompleted(): Attribute
     {
         return Attribute::make(
             get: fn() => $this->exported_at !== null && $this->failed_at === null
         );
     }
 
-    protected function pending(): Attribute
+    protected function isPending(): Attribute
     {
         return Attribute::make(
             get: fn() => $this->exported_at === null && $this->failed_at === null
         );
     }
 
-    protected function failed(): Attribute
+    protected function isFailed(): Attribute
     {
         return Attribute::make(
             get: fn() => $this->failed_at !== null
@@ -68,17 +69,20 @@ class Export extends Model
      * ================================
      */
 
-    public function scopeForSubmission(Builder $query, SubmissionInterface $submission): void
+    #[Scope]
+    protected function forSubmission(Builder $query, SubmissionInterface $submission): void
     {
         $query->where('submission_id', $submission->id());
     }
 
-    public function scopeForConnection(Builder $query, BaseConnection $connection): void
+    #[Scope]
+    protected function forConnection(Builder $query, BaseConnection $connection): void
     {
         $query->where('destination', $connection->getHandle());
     }
 
-    public function scopeForIndexPage(Builder $query): void
+    #[Scope]
+    protected function forIndexPage(Builder $query): void
     {
         $table = (new self)->getTable();
         $subQuery = Export::query()

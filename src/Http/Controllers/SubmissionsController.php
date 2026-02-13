@@ -18,8 +18,8 @@ class SubmissionsController
         $exports = Export::forSubmission(
                         app(SubmissionInterface::class, ['submission' => $submission])
                     )->get()
-                        ->each->append(['run_url', 'completed', 'pending', 'failed']);
-        $completed = $exports->filter(fn(Export $export) => $export->completed)->count() === $exports->count();
+                        ->each->append(['run_url', 'is_completed', 'is_pending', 'is_failed']);
+        $completed = $exports->filter(fn(Export $export) => $export->is_completed)->count() === $exports->count();
 
         return Inertia::render('formidable::Submission', [
             'submission' => $submission,

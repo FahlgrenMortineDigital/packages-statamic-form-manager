@@ -36,7 +36,7 @@
                 <Heading class="flex justify-between items-center">
                     <span>{{ exportItem.destination }}</span>
 
-                    <span v-if="exportItem.failed"
+                    <span v-if="exportItem.is_failed"
                             class="inline-flex items-center bg-white gap-x-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200"
                         >
                             <svg class="h-1.5 w-1.5 fill-red-500" viewBox="0 0 6 6" aria-hidden="true">
@@ -45,7 +45,7 @@
                             Failed
                         </span>
 
-                        <span v-else-if="exportItem.pending"
+                        <span v-else-if="exportItem.is_pending"
                             class="inline-flex items-center bg-white gap-x-1.5 rounded-md px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200"
                         >
                             <svg class="h-1.5 w-1.5 fill-yellow-500" viewBox="0 0 6 6" aria-hidden="true">
@@ -72,13 +72,13 @@
                         class="text-gray dark:text-dark-150 text-sm my-2"
                     />
 
-                    <Form v-if="!exportItem.completed"
+                    <Form v-if="!exportItem.is_completed"
                         method="POST"
                         :action="exportItem.run_url"
                     >
 
                         <ui-button class="btn" type="submit">
-                            {{ exportItem.failed ? 'Retry Export' : 'Run Export' }}
+                            {{ exportItem.is_failed ? 'Retry Export' : 'Run Export' }}
                         </ui-button>
                     </Form>
                 </div>
