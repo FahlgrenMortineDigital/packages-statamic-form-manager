@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\DB;
 use Statamic\Facades\FormSubmission;
 use Statamic\Forms\Submission;
 use Illuminate\Database\Eloquent\Attributes\Scope;
-
 class Export extends Model
 {
     protected $guarded = [];

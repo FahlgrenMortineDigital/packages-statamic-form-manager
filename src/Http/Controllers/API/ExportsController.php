@@ -22,9 +22,9 @@ class ExportsController
             $request->filters
         );
 
-        $sortField     = request('sort');
-        $sortDirection = request('order', 'asc');
-    
+        $sortField     = $request->sort;
+        $sortDirection = $request->order ?? 'asc';
+
         if (!$sortField && !$request->search) {
             $sortField     = 'earliest_created_at';
             $sortDirection = 'desc';
