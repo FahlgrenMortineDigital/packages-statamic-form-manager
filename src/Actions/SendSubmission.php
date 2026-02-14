@@ -5,7 +5,6 @@ namespace Fahlgrendigital\StatamicFormManager\Actions;
 use Fahlgrendigital\StatamicFormManager\Contracts\ConnectorContract;
 use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
-
 class SendSubmission extends BaseAction
 {
     public function __construct(protected ConnectorContract $connector, protected SubmissionInterface $submission)

@@ -12,7 +12,6 @@ use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Fahlgrendigital\StatamicFormManager\Data\Export;
 use Fahlgrendigital\StatamicFormManager\Support\FormConfig;
 use Illuminate\Support\Facades\Http;
-use Statamic\Forms\Submission;
 
 class HttpConnection extends BaseConnection implements ConnectorContract, HttpConnector
 {

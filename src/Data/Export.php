@@ -5,11 +5,12 @@ namespace Fahlgrendigital\StatamicFormManager\Data;
 use Fahlgrendigital\StatamicFormManager\Connector\BaseConnection;
 use Fahlgrendigital\StatamicFormManager\Contracts\SubmissionInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Statamic\Facades\FormSubmission;
 use Statamic\Forms\Submission;
-
+use Illuminate\Database\Eloquent\Attributes\Scope;
 class Export extends Model
 {
     protected $guarded = [];
@@ -30,21 +31,57 @@ class Export extends Model
 
     /**
      * ================================
+     * Attributes
+     * ================================
+     */
+    protected function runUrl(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => route('statamic.cp.formidable.exports', $this)
+        );
+    }
+
+    protected function isCompleted(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->exported_at !== null && $this->failed_at === null
+        );
+    }
+
+    protected function isPending(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->exported_at === null && $this->failed_at === null
+        );
+    }
+
+    protected function isFailed(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->failed_at !== null
+        );
+    }
+
+    /**
+     * ================================
      * Scopes
      * ================================
      */
 
-    public function scopeForSubmission(Builder $query, SubmissionInterface $submission): void
+    #[Scope]
+    protected function forSubmission(Builder $query, SubmissionInterface $submission): void
     {
         $query->where('submission_id', $submission->id());
     }
 
-    public function scopeForConnection(Builder $query, BaseConnection $connection): void
+    #[Scope]
+    protected function forConnection(Builder $query, BaseConnection $connection): void
     {
         $query->where('destination', $connection->getHandle());
     }
 
-    public function scopeForIndexPage(Builder $query): void
+    #[Scope]
+    protected function forIndexPage(Builder $query): void
     {
         $table = (new self)->getTable();
         $subQuery = Export::query()
@@ -83,21 +120,6 @@ class Export extends Model
     public function markSucceeded(): void
     {
         $this->update(['exported_at' => now(), 'failed_at' => null, 'errors' => null]);
-    }
-
-    public function completed(): bool
-    {
-        return $this->exported_at !== null && $this->failed_at === null;
-    }
-
-    public function pending(): bool
-    {
-        return $this->exported_at === null && $this->failed_at === null;
-    }
-
-    public function failed(): bool
-    {
-        return $this->failed_at !== null;
     }
 
     public function submission(): ?Submission

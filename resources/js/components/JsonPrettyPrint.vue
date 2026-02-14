@@ -1,18 +1,13 @@
-<script>
+<script setup>
 import VueJsonPretty from 'vue-json-pretty';
 import 'vue-json-pretty/lib/styles.css';
-export default {
-    name: "JsonPrettyPrint",
-    components: {
-        VueJsonPretty,
+
+const props = defineProps({
+    data: {
+        type: Object,
+        required: true,
     },
-    props: {
-        data: {
-            type: Object,
-            required: true,
-        },
-    }
-}
+})
 </script>
 
 <template>
