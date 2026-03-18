@@ -16,7 +16,7 @@ use Statamic\Providers\AddonServiceProvider;
 class StatamicFormidableFormDataProvider extends AddonServiceProvider
 {
     const PACKAGE_NAME = 'statamic-formidable';
-    const VERSION = '1.2';
+    const VERSION = '2.2.1';
 
     protected $routes = [
         'cp' => __DIR__.'/../routes/cp.php',
@@ -25,7 +25,6 @@ class StatamicFormidableFormDataProvider extends AddonServiceProvider
     protected $vite = [
         'input' => [
             'resources/js/addon.js',
-            'resources/css/addon.css',
         ],
         'publicDirectory' => 'resources/dist'
     ];
