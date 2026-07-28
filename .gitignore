@@ -17,3 +17,6 @@ resources/dist/hot
 
 # Graphify
 graphify-out
+
+# Agents
+.claude
